@@ -265,7 +265,7 @@ class Session extends React.Component {
 
   renderDate() {
     const { session, isValid, error } = this.state
-    const date = moment( session.date, 'YYYY-DD-MM' )
+    const date = moment( session.date, 'YYYY-MM-DD' )
 
     if ( this.props.view === 'edit' ) {
       return (

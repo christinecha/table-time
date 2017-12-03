@@ -39536,12 +39536,19 @@ var App = function (_React$Component) {
               } },
             'table time'
           ),
-          _react2.default.createElement(
+          this.state.view === 'feed' && _react2.default.createElement(
             'div',
             { className: 'new-session', onClick: function onClick() {
                 return _this4.newSession();
               } },
             '+ new session'
+          ),
+          this.state.view === 'edit' && _react2.default.createElement(
+            'div',
+            { className: 'new-session', onClick: function onClick() {
+                return _this4.setState({ view: 'feed' });
+              } },
+            '< back'
           )
         ),
         this.renderView()
@@ -51496,7 +51503,7 @@ var Session = function (_React$Component) {
           isValid = _state5.isValid,
           error = _state5.error;
 
-      var date = (0, _moment2.default)(session.date, 'YYYY-DD-MM');
+      var date = (0, _moment2.default)(session.date, 'YYYY-MM-DD');
 
       if (this.props.view === 'edit') {
         return _react2.default.createElement(

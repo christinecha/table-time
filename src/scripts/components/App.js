@@ -77,7 +77,14 @@ class App extends React.Component {
       <main>
         <nav>
           <h1 onClick={() => this.setState({ view: 'feed' })}>table time</h1>
-          <div className='new-session' onClick={() => this.newSession()}>+ new session</div>
+          {
+            this.state.view === 'feed' &&
+            <div className='new-session' onClick={() => this.newSession()}>+ new session</div>
+          }
+          {
+            this.state.view === 'edit' &&
+            <div className='new-session' onClick={() => this.setState({ view: 'feed' })}>{'< back'}</div>
+          }
         </nav>
         {this.renderView()}
       </main>
