@@ -11,6 +11,25 @@
     height: auto;
   }
 
+  &.edit-view {
+    .options {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+    }
+
+    input:first-of-type,
+    button {
+      margin-left: 0;
+    }
+
+    .players {
+      input:nth-child(2) {
+        margin-left: 0;
+      }
+    }
+  }
+
   .label {
     margin-bottom: 5px;
   }
@@ -69,7 +88,7 @@
 
   .date-wrapper,
   .tables-wrapper {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
   }
 
   .tables {
@@ -88,7 +107,14 @@
   }
 
   .players {
+    .input-wrapper {
+      margin-bottom: 10px;
+    }
 
+    input.player-name {
+      width: 100%;
+      margin-bottom: 0;
+    }
   }
 
   .player {
@@ -110,5 +136,12 @@
         margin-left: auto;
       }
     }
+  }
+
+  .save-session {
+    width: 100%;
+    margin-top: 20px;
+    background-color: @dark-blue;
+    height: 40px;
   }
 }

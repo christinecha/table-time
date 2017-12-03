@@ -51441,8 +51441,8 @@ var Session = function (_React$Component) {
           ),
           _react2.default.createElement(
             'button',
-            { onClick: this.saveSession },
-            'Save'
+            { className: 'save-session', onClick: this.saveSession },
+            'Save Session'
           )
         );
       } else {
@@ -51463,12 +51463,16 @@ var Session = function (_React$Component) {
 
       return _react2.default.createElement(
         'div',
-        { className: 'session', 'data-is-active': isActive, onClick: !isActive ? this.props.toggleActive : function () {} },
+        {
+          className: 'session ' + view + '-view',
+          'data-is-active': isActive,
+          onClick: !isActive ? this.props.toggleActive : function () {}
+        },
         this.renderDate(),
         isActive && _react2.default.createElement(
           'div',
           { className: 'options' },
-          _react2.default.createElement(
+          view === 'edit' || _react2.default.createElement(
             'div',
             { className: 'edit label', onClick: this.props.handleEdit },
             'edit'
@@ -52475,7 +52479,7 @@ exports = module.exports = __webpack_require__(361)();
 
 
 // module
-exports.push([module.i, "* {\n  margin: 0;\n  padding: 0;\n}\n* {\n  font-family: 'Circular', sans-serif;\n  font-weight: 300;\n  line-height: 1.3em;\n}\n::-ms-clear {\n  display: none;\n}\n::-ms-reveal {\n  display: none;\n}\n::-webkit-search-decoration,\n::-webkit-search-cancel-button,\n::-webkit-search-results-button,\n::-webkit-search-results-decoration,\n::-webkit-inner-spin-button,\n::-webkit-outer-spin-button,\n::-webkit-inner-spin-button,\n::-webkit-clear-button {\n  -webkit-appearance: none;\n  display: none;\n}\nmain {\n  position: relative;\n  width: 90%;\n  max-width: 600px;\n  margin: 0 auto;\n  box-sizing: border-box;\n}\nnav {\n  margin-bottom: 10px;\n  padding: 20px 0;\n}\nbutton {\n  border: none;\n  box-sizing: border-box;\n  border-radius: 0;\n  padding: 0 10px;\n  margin: 5px;\n  font-size: 16px;\n  height: 30px;\n  background-color: #41B6FF;\n  color: #FFF;\n}\ninput {\n  box-sizing: border-box;\n  font-size: 16px;\n  height: 30px;\n  border: 1px solid #EEE;\n  padding: 0 10px;\n  margin: 5px;\n}\nh1 {\n  font-size: 22px;\n}\nh3 {\n  font-size: 18px;\n  font-weight: 500;\n}\nh4 {\n  font-size: 36px;\n  font-weight: 200;\n}\nh5 {\n  font-weight: 500;\n  font-size: 12px;\n  letter-spacing: 0.02em;\n}\nh6 {\n  text-transform: uppercase;\n  color: #999;\n  font-weight: 300;\n  font-size: 13px;\n}\na {\n  color: inherit;\n  text-decoration: none;\n}\n.label {\n  font-size: 10px;\n  text-transform: uppercase;\n  color: #999;\n  letter-spacing: 0.1em;\n}\n.small {\n  font-size: 12px;\n  color: #999;\n  text-transform: none;\n}\n.content-wrapper {\n  position: relative;\n}\nnav h1 {\n  cursor: pointer;\n}\nnav .new-session {\n  position: absolute;\n  top: 25px;\n  right: 0;\n  cursor: pointer;\n  color: #41B6FF;\n}\n.session {\n  position: relative;\n  border: 1px solid #41B6FF;\n  padding: 10px;\n  margin-bottom: 10px;\n  height: 20px;\n  overflow: hidden;\n}\n.session[data-is-active=\"true\"] {\n  height: auto;\n}\n.session .label {\n  margin-bottom: 5px;\n}\n.session .date {\n  display: inline-block;\n  width: 100px;\n  margin-bottom: 20px;\n}\n.session .options {\n  display: inline-block;\n  cursor: pointer;\n}\n.session .edit,\n.session .delete {\n  display: inline-block;\n  margin-left: 10px;\n  padding: 5px;\n}\n.session .delete {\n  color: red;\n}\n.session .caret-wrapper {\n  position: absolute;\n  top: 5px;\n  right: 10px;\n  padding: 5px;\n  cursor: pointer;\n}\n.session .caret {\n  width: 12px;\n  height: 12px;\n  box-sizing: border-box;\n  border-bottom: 1px solid #999;\n  border-right: 1px solid #999;\n  transform: rotateZ(45deg);\n  transition: transform 300ms ease-in-out;\n}\n.session .caret[data-is-expanded=\"true\"] {\n  transform: translate3d(0, 8px, 0) rotateZ(-135deg);\n}\n.session .input-wrapper {\n  width: 100%;\n}\n.session .date-wrapper,\n.session .tables-wrapper {\n  margin-bottom: 20px;\n}\n.session .tables {\n  display: flex;\n  flex-wrap: wrap;\n}\n.session .table {\n  display: inline-block;\n  background-color: #41B6FF;\n  color: #FFF;\n  font-size: 14px;\n  padding: 2px 6px;\n  margin-right: 5px;\n  margin-bottom: 5px;\n}\n.session .player {\n  background-color: #EEE;\n  display: flex;\n  padding: 2px 6px;\n  margin-bottom: 5px;\n}\n.session .player span {\n  font-size: 14px;\n  color: #333;\n}\n.session .player span.name {\n  width: 50%;\n}\n.session .player span.money {\n  margin-right: 0;\n  margin-left: auto;\n}\n", ""]);
+exports.push([module.i, "* {\n  margin: 0;\n  padding: 0;\n}\n* {\n  font-family: 'Circular', sans-serif;\n  font-weight: 300;\n  line-height: 1.3em;\n}\n::-ms-clear {\n  display: none;\n}\n::-ms-reveal {\n  display: none;\n}\n::-webkit-search-decoration,\n::-webkit-search-cancel-button,\n::-webkit-search-results-button,\n::-webkit-search-results-decoration,\n::-webkit-inner-spin-button,\n::-webkit-outer-spin-button,\n::-webkit-inner-spin-button,\n::-webkit-clear-button {\n  -webkit-appearance: none;\n  display: none;\n}\nmain {\n  position: relative;\n  width: 90%;\n  max-width: 600px;\n  margin: 0 auto;\n  box-sizing: border-box;\n}\nnav {\n  margin-bottom: 10px;\n  padding: 20px 0;\n}\nbutton {\n  border: none;\n  box-sizing: border-box;\n  border-radius: 0;\n  padding: 0 10px;\n  margin: 5px;\n  font-size: 16px;\n  height: 30px;\n  background-color: #41B6FF;\n  color: #FFF;\n  cursor: pointer;\n}\nbutton.plain {\n  background-color: transparent;\n  color: #41B6FF;\n  padding: 0;\n}\ninput {\n  box-sizing: border-box;\n  font-size: 16px;\n  height: 30px;\n  border: 1px solid #EEE;\n  padding: 0 10px;\n  margin: 5px;\n}\nh1 {\n  font-size: 22px;\n}\nh3 {\n  font-size: 18px;\n  font-weight: 500;\n}\nh4 {\n  font-size: 36px;\n  font-weight: 200;\n}\nh5 {\n  font-weight: 500;\n  font-size: 12px;\n  letter-spacing: 0.02em;\n}\nh6 {\n  text-transform: uppercase;\n  color: #999;\n  font-weight: 300;\n  font-size: 13px;\n}\na {\n  color: inherit;\n  text-decoration: none;\n}\n.label {\n  font-size: 10px;\n  text-transform: uppercase;\n  color: #999;\n  letter-spacing: 0.1em;\n}\n.small {\n  font-size: 12px;\n  color: #999;\n  text-transform: none;\n}\n.content-wrapper {\n  position: relative;\n}\nnav h1 {\n  cursor: pointer;\n}\nnav .new-session {\n  position: absolute;\n  top: 25px;\n  right: 0;\n  cursor: pointer;\n  color: #41B6FF;\n}\n.session {\n  position: relative;\n  border: 1px solid #41B6FF;\n  padding: 10px;\n  margin-bottom: 10px;\n  height: 20px;\n  overflow: hidden;\n}\n.session[data-is-active=\"true\"] {\n  height: auto;\n}\n.session.edit-view .options {\n  position: absolute;\n  top: 8px;\n  right: 10px;\n}\n.session.edit-view input:first-of-type,\n.session.edit-view button {\n  margin-left: 0;\n}\n.session.edit-view .players input:nth-child(2) {\n  margin-left: 0;\n}\n.session .label {\n  margin-bottom: 5px;\n}\n.session .date {\n  display: inline-block;\n  width: 100px;\n  margin-bottom: 20px;\n}\n.session .options {\n  display: inline-block;\n  cursor: pointer;\n}\n.session .edit,\n.session .delete {\n  display: inline-block;\n  margin-left: 10px;\n  padding: 5px;\n}\n.session .delete {\n  color: red;\n}\n.session .caret-wrapper {\n  position: absolute;\n  top: 5px;\n  right: 10px;\n  padding: 5px;\n  cursor: pointer;\n}\n.session .caret {\n  width: 12px;\n  height: 12px;\n  box-sizing: border-box;\n  border-bottom: 1px solid #999;\n  border-right: 1px solid #999;\n  transform: rotateZ(45deg);\n  transition: transform 300ms ease-in-out;\n}\n.session .caret[data-is-expanded=\"true\"] {\n  transform: translate3d(0, 8px, 0) rotateZ(-135deg);\n}\n.session .input-wrapper {\n  width: 100%;\n}\n.session .date-wrapper,\n.session .tables-wrapper {\n  margin-bottom: 30px;\n}\n.session .tables {\n  display: flex;\n  flex-wrap: wrap;\n}\n.session .table {\n  display: inline-block;\n  background-color: #41B6FF;\n  color: #FFF;\n  font-size: 14px;\n  padding: 2px 6px;\n  margin-right: 5px;\n  margin-bottom: 5px;\n}\n.session .players .input-wrapper {\n  margin-bottom: 10px;\n}\n.session .players input.player-name {\n  width: 100%;\n  margin-bottom: 0;\n}\n.session .player {\n  background-color: #EEE;\n  display: flex;\n  padding: 2px 6px;\n  margin-bottom: 5px;\n}\n.session .player span {\n  font-size: 14px;\n  color: #333;\n}\n.session .player span.name {\n  width: 50%;\n}\n.session .player span.money {\n  margin-right: 0;\n  margin-left: auto;\n}\n.session .save-session {\n  width: 100%;\n  margin-top: 20px;\n  background-color: #2430A4;\n  height: 40px;\n}\n", ""]);
 
 // exports
 
@@ -65346,6 +65350,7 @@ var Players = function (_React$Component) {
               }
             },
             _react2.default.createElement('input', {
+              className: 'player-name',
               type: 'text',
               placeholder: 'Player Name',
               value: player.name,
@@ -65430,8 +65435,8 @@ var Players = function (_React$Component) {
           this.renderPlayers(),
           view === 'edit' && _react2.default.createElement(
             'button',
-            { onClick: addPlayer },
-            '+ Add Player'
+            { className: 'plain', onClick: addPlayer },
+            '+ Add Another Player'
           )
         )
       );
@@ -65561,8 +65566,8 @@ var Tables = function (_React$Component) {
           this.renderTables(),
           view === 'edit' && _react2.default.createElement(
             'button',
-            { onClick: addTable },
-            '+ Add Table'
+            { className: 'plain', onClick: addTable },
+            '+ Add Another Table'
           )
         )
       );

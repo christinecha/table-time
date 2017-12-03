@@ -221,7 +221,7 @@ class Session extends React.Component {
       return (
         <div>
           <p className='error'>{isValid ? '' : error}</p>
-          <button onClick={this.saveSession}>Save</button>
+          <button className='save-session' onClick={this.saveSession}>Save Session</button>
         </div>
       )
     }
@@ -235,12 +235,17 @@ class Session extends React.Component {
     const { view, isActive } = this.props
 
     return (
-      <div className='session' data-is-active={isActive} onClick={!isActive ? this.props.toggleActive : () => {}}>
+      <div
+        className={`session ${ view }-view`}
+        data-is-active={isActive}
+        onClick={!isActive ? this.props.toggleActive : () => {}}
+      >
+
         {this.renderDate()}
 
         {isActive &&
         <div className='options'>
-          <div className='edit label' onClick={this.props.handleEdit}>edit</div>
+          {view === 'edit' || <div className='edit label' onClick={this.props.handleEdit}>edit</div>}
           <div className='delete label' onClick={this.handleDelete}>delete</div>
         </div>
         }

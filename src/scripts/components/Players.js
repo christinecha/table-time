@@ -14,6 +14,7 @@ class Players extends React.Component {
             onClick={() => this.props.setActivePlayer( i )}
           >
             <input
+              className='player-name'
               type='text'
               placeholder='Player Name'
               value={player.name}
@@ -56,7 +57,7 @@ class Players extends React.Component {
         <p className='label'>Players</p>
         <div className='players'>
           {this.renderPlayers()}
-          {view === 'edit' && <button onClick={addPlayer}>+ Add Player</button>}
+          {view === 'edit' && <button className='plain' onClick={addPlayer}>+ Add Another Player</button>}
         </div>
       </div>
     )

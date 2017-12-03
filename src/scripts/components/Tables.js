@@ -47,7 +47,7 @@ class Tables extends React.Component {
         <p className='label'>Tables</p>
         <div className='tables'>
           {this.renderTables()}
-          {view === 'edit' && <button onClick={addTable}>+ Add Table</button>}
+          {view === 'edit' && <button className='plain' onClick={addTable}>+ Add Another Table</button>}
         </div>
       </div>
     )
