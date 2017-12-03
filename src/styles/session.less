@@ -1,0 +1,64 @@
+.session {
+  position: relative;
+  border: 1px solid @light-blue;
+  padding: 10px;
+  margin-bottom: 10px;
+
+  .label {
+    margin-bottom: 5px;
+  }
+
+  .edit {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+
+  .date {
+    margin-bottom: 20px;
+  }
+
+  .tables-wrapper {
+    margin-bottom: 20px;
+  }
+
+  .tables {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .table {
+    display: inline-block;
+    background-color: @light-blue;
+    color: @white;
+    font-size: 14px;
+    padding: 2px 6px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+  }
+
+  .players {
+
+  }
+
+  .player {
+    background-color: @light-gray;
+    display: flex;
+    padding: 2px 6px;
+    margin-bottom: 5px;
+
+    span {
+      font-size: 14px;
+      color: @dark-gray;
+
+      &.name {
+        width: 50%;
+      }
+
+      &.money {
+        margin-right: 0;
+        margin-left: auto;
+      }
+    }
+  }
+}
