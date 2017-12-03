@@ -1,4 +1,5 @@
 import React from 'react'
+import moment from 'moment'
 
 import { ref } from '../constants/firebase'
 import getMoney from '../lib/getMoney'
@@ -36,6 +37,7 @@ class Session extends React.Component {
 
     this.addPlayer = this.addPlayer.bind( this )
     this.addTable = this.addTable.bind( this )
+    this.handleDelete = this.handleDelete.bind( this )
     this.handleChange = this.handleChange.bind( this )
     this.saveSession = this.saveSession.bind( this )
 
@@ -48,6 +50,16 @@ class Session extends React.Component {
       isValid: true,
       error: '',
     }
+  }
+
+  handleDelete() {
+    const { session } = this.state
+
+    if ( session.id ) {
+      ref.child( `sessions/${ session.id }` ).remove()
+    }
+
+    this.props.handleDelete()
   }
 
   handleChange( e ) {
@@ -253,6 +265,8 @@ class Session extends React.Component {
 
   renderDate() {
     const { session, isValid, error } = this.state
+    const date = moment( session.date, 'YYYY-DD-MM' )
+
     if ( this.props.view === 'edit' ) {
       return (
         <input
@@ -265,7 +279,7 @@ class Session extends React.Component {
     else {
       return (
         <div className='date'>
-          {session.date}
+          {date.format( 'ddd, MMM DD' )}
         </div>
       )
     }
@@ -293,7 +307,11 @@ class Session extends React.Component {
     return (
       <div className='session'>
         {this.renderDate()}
-        <div className='edit label' onClick={this.props.handleEdit}>edit</div>
+
+        <div className='options'>
+          <div className='edit label' onClick={this.props.handleEdit}>edit</div>
+          <div className='delete label' onClick={this.handleDelete}>delete</div>
+        </div>
 
         <div className='tables-wrapper'>
           <p className='label'>Tables</p>

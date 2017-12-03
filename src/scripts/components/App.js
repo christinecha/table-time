@@ -26,6 +26,13 @@ class App extends React.Component {
     })
   }
 
+  deleteSession( key ) {
+    this.setState({
+      activeSession: null,
+      view: 'feed',
+    })
+  }
+
   renderView() {
     const { sessions, view, activeSession } = this.state
 
@@ -36,6 +43,7 @@ class App extends React.Component {
         <Session
           view={view}
           session={session}
+          handleDelete={() => this.deleteSession( activeSession )}
           handleSave={() => this.setState({ view: 'feed' })}
         />
       )
@@ -49,6 +57,7 @@ class App extends React.Component {
             view={view}
             key={key}
             session={sessions[ key ]}
+            handleDelete={() => this.deleteSession( key )}
             handleEdit={() => this.editSession( key )}
           />
         )
@@ -59,6 +68,9 @@ class App extends React.Component {
   render () {
     return (
       <main>
+        <nav>
+          <h1>table time</h1>
+        </nav>
         {this.renderView()}
       </main>
     )
