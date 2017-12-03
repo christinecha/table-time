@@ -1,10 +1,12 @@
 import React from 'react'
 import moment from 'moment'
 
-import { ref } from '../constants/firebase'
-import getMoney from '../lib/getMoney'
+import Players from './Players'
+import Tables from './Tables'
 
-const DEFAULT_DATE = new Date().toISOString().substring( 0, 10 )
+import { ref } from '../constants/firebase'
+
+const DEFAULT_DATE = moment().format( 'YYYY-MM-DD' )
 const DEFAULT_START_TIME = '17:30'
 const DEFAULT_END_TIME = '20:30'
 
@@ -69,7 +71,7 @@ class Session extends React.Component {
     this.setState( data )
   }
 
-  handleTableChange( e, key ) {
+  updateActiveTable( e, key ) {
     // TODO: Invalidate if player time is outside of table time
     const { session, activeTable } = this.state
     const tables = session.tables.slice()
@@ -77,7 +79,7 @@ class Session extends React.Component {
     this.updateSession({ tables })
   }
 
-  handlePlayerChange( e, key ) {
+  updateActivePlayer( e, key ) {
     // TODO: Invalidate if player time is outside of table time
     const { session, activePlayer } = this.state
     const players = session.players
@@ -162,6 +164,14 @@ class Session extends React.Component {
     return isValid
   }
 
+  setActivePlayer( i ) {
+    this.setState({ activePlayer: i })
+  }
+
+  setActiveTable( i ) {
+    this.setState({ activeTable: i })
+  }
+
   saveSession() {
     if ( !this.isValid()) return
 
@@ -177,90 +187,6 @@ class Session extends React.Component {
     }
 
     this.props.handleSave()
-  }
-
-  renderTables() {
-    const { session, activeTable } = this.state
-    return session.tables.map(( table, i ) => {
-      if ( this.props.view === 'edit' ) {
-        return (
-          <div
-            className='input-wrapper'
-            data-is-active={i === activeTable}
-            key={`table-${ i }`}
-            onClick={() => this.setState({ activeTable: i })}
-          >
-            <input
-              type='time'
-              step={15 * 60}
-              value={table.startTime}
-              onChange={( e ) => this.handleTableChange( e, 'startTime' )}
-            />
-            <span>-</span>
-            <input
-              type='time'
-              step={15 * 60}
-              value={table.endTime}
-              onChange={( e ) => this.handleTableChange( e, 'endTime' )}
-            />
-            {i !== 0 && <div className='delete' onClick={() => this.deleteTable( i )}>✕</div>}
-          </div>
-        )
-      }
-      else {
-        return (
-          <div className='table' key={i}>
-            {table.startTime} - {table.endTime}
-          </div>
-        )
-      }
-    })
-  }
-
-  renderPlayers() {
-    const { session, activePlayer } = this.state
-    return session.players.map(( player, i ) => {
-      if ( this.props.view === 'edit' ) {
-        return (
-          <div
-            className='input-wrapper'
-            data-is-active={i === activePlayer}
-            key={i}
-            onClick={() => this.setState({ activePlayer: i })}
-          >
-            <input
-              type='text'
-              placeholder='Player Name'
-              value={player.name}
-              onChange={( e ) => this.handlePlayerChange( e, 'name' )}
-            />
-            <input
-              type='time'
-              step={15 * 60}
-              value={player.startTime}
-              onChange={( e ) => this.handlePlayerChange( e, 'startTime' )}
-            />
-            <span>-</span>
-            <input
-              type='time'
-              step={15 * 60}
-              value={player.endTime}
-              onChange={( e ) => this.handlePlayerChange( e, 'endTime' )}
-            />
-            {i !== 0 && <div className='delete' onClick={() => this.deletePlayer( i )}>✕</div>}
-          </div>
-        )
-      }
-      else {
-        return (
-          <div className='player' key={i}>
-            <span className='name'>{player.name}</span>
-            <span className='time'>{player.startTime}-{player.endTime}</span>
-            <span className='money'>${getMoney( session, player )}</span>
-          </div>
-        )
-      }
-    })
   }
 
   renderDate() {
@@ -305,32 +231,45 @@ class Session extends React.Component {
   }
 
   render () {
-    const { view } = this.props
+    const { session, activePlayer, activeTable } = this.state
+    const { view, isActive } = this.props
 
     return (
-      <div className='session'>
+      <div className='session' data-is-active={isActive} onClick={!isActive ? this.props.toggleActive : () => {}}>
         {this.renderDate()}
 
+        {isActive &&
         <div className='options'>
           <div className='edit label' onClick={this.props.handleEdit}>edit</div>
           <div className='delete label' onClick={this.handleDelete}>delete</div>
         </div>
+        }
 
-        <div className='tables-wrapper'>
-          <p className='label'>Tables</p>
-          <div className='tables'>
-            {this.renderTables()}
-            {view === 'edit' && <button onClick={this.addTable}>+ Add Table</button>}
-          </div>
+        {view !== 'edit' &&
+        <div className='caret-wrapper' onClick={this.props.toggleActive}>
+          <div className='caret' data-is-expanded={isActive}></div>
         </div>
+        }
 
-        <div className='players-wrapper'>
-          <p className='label'>Players</p>
-          <div className='players'>
-            {this.renderPlayers()}
-            {view === 'edit' && <button onClick={this.addPlayer}>+ Add Player</button>}
-          </div>
-        </div>
+        <Tables
+          session={session}
+          activeTable={activeTable}
+          view={view}
+          addTable={this.addTable.bind( this )}
+          deleteTable={this.deleteTable.bind( this )}
+          updateActiveTable={this.updateActiveTable.bind( this )}
+          setActiveTable={this.setActiveTable.bind( this )}
+        />
+
+        <Players
+          session={session}
+          activePlayer={activePlayer}
+          view={view}
+          addPlayer={this.addPlayer.bind( this )}
+          deletePlayer={this.deletePlayer.bind( this )}
+          updateActivePlayer={this.updateActivePlayer.bind( this )}
+          setActivePlayer={this.setActivePlayer.bind( this )}
+        />
 
         {this.renderSave()}
       </div>

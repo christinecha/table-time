@@ -4,7 +4,6 @@
   "rules": {
     "default-case": "error",
     "eqeqeq": [ "error", "smart" ],
-    "guard-for-in": "error",
     "no-alert": "error",
     "no-caller": "error",
     "no-eval": "error",
@@ -58,6 +57,7 @@
 
     // eslint-config-squarespace exceptions
     "camelcase": "warn",
+    "guard-for-in": "off",
     "no-debugger": "off",
     "no-else-return": "off",
     "no-invalid-this": "off",

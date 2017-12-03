@@ -8,14 +8,21 @@ class App extends React.Component {
 
     this.state = {
       view: 'feed',
-      sessions: {},
-      activeSession: null,
+      sessions: [],
+      activeSession: 0,
+      expandedSessions: [ 0 ],
     }
   }
 
   componentWillMount() {
-    ref.child( 'sessions' ).on( 'value', ( snapshot ) => {
-      this.setState({ sessions: snapshot.val() })
+    ref.child( 'sessions' ).orderByChild( 'date' ).on( 'value', ( snapshot ) => {
+      const sessions = []
+
+      snapshot.forEach(( childSnapshot ) =>  {
+        sessions.unshift( childSnapshot.val())
+      })
+
+      this.setState({ sessions })
     })
   }
 
@@ -26,7 +33,7 @@ class App extends React.Component {
     })
   }
 
-  deleteSession( key ) {
+  deleteSession() {
     this.setState({
       activeSession: null,
       view: 'feed',
@@ -40,16 +47,27 @@ class App extends React.Component {
     })
   }
 
-  renderView() {
-    const { sessions, view, activeSession } = this.state
+  setActiveSession( i ) {
+    this.setState({ activeSession: i })
+  }
 
-    const session = activeSession ? sessions[ activeSession ] : null
+  toggleExpanded( i ) {
+    const expandedSessions = this.state.expandedSessions.slice()
+    const index = expandedSessions.indexOf( i )
+    if ( index > -1 ) expandedSessions.splice( index, 1 )
+    else expandedSessions.push( i )
+    this.setState({ expandedSessions })
+  }
+
+  renderView() {
+    const { sessions, view, activeSession, expandedSessions } = this.state
 
     if ( view === 'edit' ) {
       return (
         <Session
+          isActive={true}
           view={view}
-          session={session}
+          session={sessions[ activeSession ]}
           handleDelete={() => this.deleteSession( activeSession )}
           handleSave={() => this.setState({ view: 'feed' })}
         />
@@ -57,15 +75,16 @@ class App extends React.Component {
     }
 
     else {
-      const keys = Object.keys( sessions )
-      return keys.map(( key ) => {
+      return sessions.map(( session, i ) => {
         return (
           <Session
+            isActive={expandedSessions.indexOf( i ) > -1}
             view={view}
-            key={key}
-            session={sessions[ key ]}
-            handleDelete={() => this.deleteSession( key )}
-            handleEdit={() => this.editSession( key )}
+            key={session.id}
+            session={session}
+            handleDelete={() => this.deleteSession( i )}
+            handleEdit={() => this.editSession( i )}
+            toggleActive={() => this.toggleExpanded( i )}
           />
         )
       })

@@ -39438,8 +39438,9 @@ var App = function (_React$Component) {
 
     _this.state = {
       view: 'feed',
-      sessions: {},
-      activeSession: null
+      sessions: [],
+      activeSession: 0,
+      expandedSessions: [0]
     };
     return _this;
   }
@@ -39449,8 +39450,14 @@ var App = function (_React$Component) {
     value: function componentWillMount() {
       var _this2 = this;
 
-      _firebase.ref.child('sessions').on('value', function (snapshot) {
-        _this2.setState({ sessions: snapshot.val() });
+      _firebase.ref.child('sessions').orderByChild('date').on('value', function (snapshot) {
+        var sessions = [];
+
+        snapshot.forEach(function (childSnapshot) {
+          sessions.unshift(childSnapshot.val());
+        });
+
+        _this2.setState({ sessions: sessions });
       });
     }
   }, {
@@ -39463,7 +39470,7 @@ var App = function (_React$Component) {
     }
   }, {
     key: 'deleteSession',
-    value: function deleteSession(key) {
+    value: function deleteSession() {
       this.setState({
         activeSession: null,
         view: 'feed'
@@ -39478,6 +39485,19 @@ var App = function (_React$Component) {
       });
     }
   }, {
+    key: 'setActiveSession',
+    value: function setActiveSession(i) {
+      this.setState({ activeSession: i });
+    }
+  }, {
+    key: 'toggleExpanded',
+    value: function toggleExpanded(i) {
+      var expandedSessions = this.state.expandedSessions.slice();
+      var index = expandedSessions.indexOf(i);
+      if (index > -1) expandedSessions.splice(index, 1);else expandedSessions.push(i);
+      this.setState({ expandedSessions: expandedSessions });
+    }
+  }, {
     key: 'renderView',
     value: function renderView() {
       var _this3 = this;
@@ -39485,15 +39505,15 @@ var App = function (_React$Component) {
       var _state = this.state,
           sessions = _state.sessions,
           view = _state.view,
-          activeSession = _state.activeSession;
+          activeSession = _state.activeSession,
+          expandedSessions = _state.expandedSessions;
 
-
-      var session = activeSession ? sessions[activeSession] : null;
 
       if (view === 'edit') {
         return _react2.default.createElement(_Session2.default, {
+          isActive: true,
           view: view,
-          session: session,
+          session: sessions[activeSession],
           handleDelete: function handleDelete() {
             return _this3.deleteSession(activeSession);
           },
@@ -39502,17 +39522,20 @@ var App = function (_React$Component) {
           }
         });
       } else {
-        var keys = Object.keys(sessions);
-        return keys.map(function (key) {
+        return sessions.map(function (session, i) {
           return _react2.default.createElement(_Session2.default, {
+            isActive: expandedSessions.indexOf(i) > -1,
             view: view,
-            key: key,
-            session: sessions[key],
+            key: session.id,
+            session: session,
             handleDelete: function handleDelete() {
-              return _this3.deleteSession(key);
+              return _this3.deleteSession(i);
             },
             handleEdit: function handleEdit() {
-              return _this3.editSession(key);
+              return _this3.editSession(i);
+            },
+            toggleActive: function toggleActive() {
+              return _this3.toggleExpanded(i);
             }
           });
         });
@@ -51126,11 +51149,15 @@ var _moment = __webpack_require__(0);
 
 var _moment2 = _interopRequireDefault(_moment);
 
+var _Players = __webpack_require__(473);
+
+var _Players2 = _interopRequireDefault(_Players);
+
+var _Tables = __webpack_require__(474);
+
+var _Tables2 = _interopRequireDefault(_Tables);
+
 var _firebase = __webpack_require__(129);
-
-var _getMoney = __webpack_require__(358);
-
-var _getMoney2 = _interopRequireDefault(_getMoney);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -51140,7 +51167,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var DEFAULT_DATE = new Date().toISOString().substring(0, 10);
+var DEFAULT_DATE = (0, _moment2.default)().format('YYYY-MM-DD');
 var DEFAULT_START_TIME = '17:30';
 var DEFAULT_END_TIME = '20:30';
 
@@ -51217,8 +51244,8 @@ var Session = function (_React$Component) {
       this.setState(data);
     }
   }, {
-    key: 'handleTableChange',
-    value: function handleTableChange(e, key) {
+    key: 'updateActiveTable',
+    value: function updateActiveTable(e, key) {
       // TODO: Invalidate if player time is outside of table time
       var _state = this.state,
           session = _state.session,
@@ -51229,8 +51256,8 @@ var Session = function (_React$Component) {
       this.updateSession({ tables: tables });
     }
   }, {
-    key: 'handlePlayerChange',
-    value: function handlePlayerChange(e, key) {
+    key: 'updateActivePlayer',
+    value: function updateActivePlayer(e, key) {
       // TODO: Invalidate if player time is outside of table time
       var _state2 = this.state,
           session = _state2.session,
@@ -51331,6 +51358,16 @@ var Session = function (_React$Component) {
       return isValid;
     }
   }, {
+    key: 'setActivePlayer',
+    value: function setActivePlayer(i) {
+      this.setState({ activePlayer: i });
+    }
+  }, {
+    key: 'setActiveTable',
+    value: function setActiveTable(i) {
+      this.setState({ activeTable: i });
+    }
+  }, {
     key: 'saveSession',
     value: function saveSession() {
       if (!this.isValid()) return;
@@ -51349,159 +51386,14 @@ var Session = function (_React$Component) {
       this.props.handleSave();
     }
   }, {
-    key: 'renderTables',
-    value: function renderTables() {
+    key: 'renderDate',
+    value: function renderDate() {
       var _this2 = this;
 
       var _state3 = this.state,
           session = _state3.session,
-          activeTable = _state3.activeTable;
-
-      return session.tables.map(function (table, i) {
-        if (_this2.props.view === 'edit') {
-          return _react2.default.createElement(
-            'div',
-            {
-              className: 'input-wrapper',
-              'data-is-active': i === activeTable,
-              key: 'table-' + i,
-              onClick: function onClick() {
-                return _this2.setState({ activeTable: i });
-              }
-            },
-            _react2.default.createElement('input', {
-              type: 'time',
-              step: 15 * 60,
-              value: table.startTime,
-              onChange: function onChange(e) {
-                return _this2.handleTableChange(e, 'startTime');
-              }
-            }),
-            _react2.default.createElement(
-              'span',
-              null,
-              '-'
-            ),
-            _react2.default.createElement('input', {
-              type: 'time',
-              step: 15 * 60,
-              value: table.endTime,
-              onChange: function onChange(e) {
-                return _this2.handleTableChange(e, 'endTime');
-              }
-            }),
-            i !== 0 && _react2.default.createElement(
-              'div',
-              { className: 'delete', onClick: function onClick() {
-                  return _this2.deleteTable(i);
-                } },
-              '\u2715'
-            )
-          );
-        } else {
-          return _react2.default.createElement(
-            'div',
-            { className: 'table', key: i },
-            table.startTime,
-            ' - ',
-            table.endTime
-          );
-        }
-      });
-    }
-  }, {
-    key: 'renderPlayers',
-    value: function renderPlayers() {
-      var _this3 = this;
-
-      var _state4 = this.state,
-          session = _state4.session,
-          activePlayer = _state4.activePlayer;
-
-      return session.players.map(function (player, i) {
-        if (_this3.props.view === 'edit') {
-          return _react2.default.createElement(
-            'div',
-            {
-              className: 'input-wrapper',
-              'data-is-active': i === activePlayer,
-              key: i,
-              onClick: function onClick() {
-                return _this3.setState({ activePlayer: i });
-              }
-            },
-            _react2.default.createElement('input', {
-              type: 'text',
-              placeholder: 'Player Name',
-              value: player.name,
-              onChange: function onChange(e) {
-                return _this3.handlePlayerChange(e, 'name');
-              }
-            }),
-            _react2.default.createElement('input', {
-              type: 'time',
-              step: 15 * 60,
-              value: player.startTime,
-              onChange: function onChange(e) {
-                return _this3.handlePlayerChange(e, 'startTime');
-              }
-            }),
-            _react2.default.createElement(
-              'span',
-              null,
-              '-'
-            ),
-            _react2.default.createElement('input', {
-              type: 'time',
-              step: 15 * 60,
-              value: player.endTime,
-              onChange: function onChange(e) {
-                return _this3.handlePlayerChange(e, 'endTime');
-              }
-            }),
-            i !== 0 && _react2.default.createElement(
-              'div',
-              { className: 'delete', onClick: function onClick() {
-                  return _this3.deletePlayer(i);
-                } },
-              '\u2715'
-            )
-          );
-        } else {
-          return _react2.default.createElement(
-            'div',
-            { className: 'player', key: i },
-            _react2.default.createElement(
-              'span',
-              { className: 'name' },
-              player.name
-            ),
-            _react2.default.createElement(
-              'span',
-              { className: 'time' },
-              player.startTime,
-              '-',
-              player.endTime
-            ),
-            _react2.default.createElement(
-              'span',
-              { className: 'money' },
-              '$',
-              (0, _getMoney2.default)(session, player)
-            )
-          );
-        }
-      });
-    }
-  }, {
-    key: 'renderDate',
-    value: function renderDate() {
-      var _this4 = this;
-
-      var _state5 = this.state,
-          session = _state5.session,
-          isValid = _state5.isValid,
-          error = _state5.error;
+          isValid = _state3.isValid,
+          error = _state3.error;
 
       var date = (0, _moment2.default)(session.date, 'YYYY-MM-DD');
 
@@ -51518,7 +51410,7 @@ var Session = function (_React$Component) {
             type: 'date',
             value: session.date,
             onChange: function onChange(e) {
-              return _this4.handleSessionChange(e, 'date');
+              return _this2.handleSessionChange(e, 'date');
             }
           })
         );
@@ -51533,9 +51425,9 @@ var Session = function (_React$Component) {
   }, {
     key: 'renderSave',
     value: function renderSave() {
-      var _state6 = this.state,
-          isValid = _state6.isValid,
-          error = _state6.error;
+      var _state4 = this.state,
+          isValid = _state4.isValid,
+          error = _state4.error;
 
 
       if (this.props.view === 'edit') {
@@ -51560,14 +51452,20 @@ var Session = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var view = this.props.view;
+      var _state5 = this.state,
+          session = _state5.session,
+          activePlayer = _state5.activePlayer,
+          activeTable = _state5.activeTable;
+      var _props = this.props,
+          view = _props.view,
+          isActive = _props.isActive;
 
 
       return _react2.default.createElement(
         'div',
-        { className: 'session' },
+        { className: 'session', 'data-is-active': isActive, onClick: !isActive ? this.props.toggleActive : function () {} },
         this.renderDate(),
-        _react2.default.createElement(
+        isActive && _react2.default.createElement(
           'div',
           { className: 'options' },
           _react2.default.createElement(
@@ -51581,44 +51479,29 @@ var Session = function (_React$Component) {
             'delete'
           )
         ),
-        _react2.default.createElement(
+        view !== 'edit' && _react2.default.createElement(
           'div',
-          { className: 'tables-wrapper' },
-          _react2.default.createElement(
-            'p',
-            { className: 'label' },
-            'Tables'
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'tables' },
-            this.renderTables(),
-            view === 'edit' && _react2.default.createElement(
-              'button',
-              { onClick: this.addTable },
-              '+ Add Table'
-            )
-          )
+          { className: 'caret-wrapper', onClick: this.props.toggleActive },
+          _react2.default.createElement('div', { className: 'caret', 'data-is-expanded': isActive })
         ),
-        _react2.default.createElement(
-          'div',
-          { className: 'players-wrapper' },
-          _react2.default.createElement(
-            'p',
-            { className: 'label' },
-            'Players'
-          ),
-          _react2.default.createElement(
-            'div',
-            { className: 'players' },
-            this.renderPlayers(),
-            view === 'edit' && _react2.default.createElement(
-              'button',
-              { onClick: this.addPlayer },
-              '+ Add Player'
-            )
-          )
-        ),
+        _react2.default.createElement(_Tables2.default, {
+          session: session,
+          activeTable: activeTable,
+          view: view,
+          addTable: this.addTable.bind(this),
+          deleteTable: this.deleteTable.bind(this),
+          updateActiveTable: this.updateActiveTable.bind(this),
+          setActiveTable: this.setActiveTable.bind(this)
+        }),
+        _react2.default.createElement(_Players2.default, {
+          session: session,
+          activePlayer: activePlayer,
+          view: view,
+          addPlayer: this.addPlayer.bind(this),
+          deletePlayer: this.deletePlayer.bind(this),
+          updateActivePlayer: this.updateActivePlayer.bind(this),
+          setActivePlayer: this.setActivePlayer.bind(this)
+        }),
         this.renderSave()
       );
     }
@@ -52592,7 +52475,7 @@ exports = module.exports = __webpack_require__(361)();
 
 
 // module
-exports.push([module.i, "* {\n  margin: 0;\n  padding: 0;\n}\n* {\n  font-family: 'Circular', sans-serif;\n  font-weight: 300;\n  line-height: 1.3em;\n}\n::-ms-clear {\n  display: none;\n}\n::-ms-reveal {\n  display: none;\n}\n::-webkit-search-decoration,\n::-webkit-search-cancel-button,\n::-webkit-search-results-button,\n::-webkit-search-results-decoration,\n::-webkit-inner-spin-button,\n::-webkit-outer-spin-button,\n::-webkit-inner-spin-button,\n::-webkit-clear-button {\n  -webkit-appearance: none;\n  display: none;\n}\nmain {\n  position: relative;\n  width: 90%;\n  max-width: 600px;\n  margin: 0 auto;\n  box-sizing: border-box;\n}\nnav {\n  margin-bottom: 10px;\n  padding: 20px 0;\n}\nbutton {\n  border: none;\n  box-sizing: border-box;\n  border-radius: 0;\n  padding: 0 10px;\n  margin: 5px;\n  font-size: 16px;\n  height: 30px;\n  background-color: #41B6FF;\n  color: #FFF;\n}\ninput {\n  box-sizing: border-box;\n  font-size: 16px;\n  height: 30px;\n  border: 1px solid #EEE;\n  padding: 0 10px;\n  margin: 5px;\n}\nh1 {\n  font-size: 22px;\n}\nh3 {\n  font-size: 18px;\n  font-weight: 500;\n}\nh4 {\n  font-size: 36px;\n  font-weight: 200;\n}\nh5 {\n  font-weight: 500;\n  font-size: 12px;\n  letter-spacing: 0.02em;\n}\nh6 {\n  text-transform: uppercase;\n  color: #999;\n  font-weight: 300;\n  font-size: 13px;\n}\na {\n  color: inherit;\n  text-decoration: none;\n}\n.label {\n  font-size: 10px;\n  text-transform: uppercase;\n  color: #999;\n  letter-spacing: 0.1em;\n}\n.small {\n  font-size: 12px;\n  color: #999;\n  text-transform: none;\n}\n.content-wrapper {\n  position: relative;\n}\nnav h1 {\n  cursor: pointer;\n}\nnav .new-session {\n  position: absolute;\n  top: 25px;\n  right: 0;\n  cursor: pointer;\n  color: #41B6FF;\n}\n.session {\n  position: relative;\n  border: 1px solid #41B6FF;\n  padding: 10px;\n  margin-bottom: 10px;\n}\n.session .label {\n  margin-bottom: 5px;\n}\n.session .options {\n  position: absolute;\n  top: 10px;\n  right: 10px;\n  cursor: pointer;\n}\n.session .edit,\n.session .delete {\n  display: inline-block;\n  margin-left: 15px;\n}\n.session .delete {\n  color: red;\n}\n.session .date {\n  margin-bottom: 20px;\n}\n.session .input-wrapper {\n  width: 100%;\n}\n.session .date-wrapper,\n.session .tables-wrapper {\n  margin-bottom: 20px;\n}\n.session .tables {\n  display: flex;\n  flex-wrap: wrap;\n}\n.session .table {\n  display: inline-block;\n  background-color: #41B6FF;\n  color: #FFF;\n  font-size: 14px;\n  padding: 2px 6px;\n  margin-right: 5px;\n  margin-bottom: 5px;\n}\n.session .player {\n  background-color: #EEE;\n  display: flex;\n  padding: 2px 6px;\n  margin-bottom: 5px;\n}\n.session .player span {\n  font-size: 14px;\n  color: #333;\n}\n.session .player span.name {\n  width: 50%;\n}\n.session .player span.money {\n  margin-right: 0;\n  margin-left: auto;\n}\n", ""]);
+exports.push([module.i, "* {\n  margin: 0;\n  padding: 0;\n}\n* {\n  font-family: 'Circular', sans-serif;\n  font-weight: 300;\n  line-height: 1.3em;\n}\n::-ms-clear {\n  display: none;\n}\n::-ms-reveal {\n  display: none;\n}\n::-webkit-search-decoration,\n::-webkit-search-cancel-button,\n::-webkit-search-results-button,\n::-webkit-search-results-decoration,\n::-webkit-inner-spin-button,\n::-webkit-outer-spin-button,\n::-webkit-inner-spin-button,\n::-webkit-clear-button {\n  -webkit-appearance: none;\n  display: none;\n}\nmain {\n  position: relative;\n  width: 90%;\n  max-width: 600px;\n  margin: 0 auto;\n  box-sizing: border-box;\n}\nnav {\n  margin-bottom: 10px;\n  padding: 20px 0;\n}\nbutton {\n  border: none;\n  box-sizing: border-box;\n  border-radius: 0;\n  padding: 0 10px;\n  margin: 5px;\n  font-size: 16px;\n  height: 30px;\n  background-color: #41B6FF;\n  color: #FFF;\n}\ninput {\n  box-sizing: border-box;\n  font-size: 16px;\n  height: 30px;\n  border: 1px solid #EEE;\n  padding: 0 10px;\n  margin: 5px;\n}\nh1 {\n  font-size: 22px;\n}\nh3 {\n  font-size: 18px;\n  font-weight: 500;\n}\nh4 {\n  font-size: 36px;\n  font-weight: 200;\n}\nh5 {\n  font-weight: 500;\n  font-size: 12px;\n  letter-spacing: 0.02em;\n}\nh6 {\n  text-transform: uppercase;\n  color: #999;\n  font-weight: 300;\n  font-size: 13px;\n}\na {\n  color: inherit;\n  text-decoration: none;\n}\n.label {\n  font-size: 10px;\n  text-transform: uppercase;\n  color: #999;\n  letter-spacing: 0.1em;\n}\n.small {\n  font-size: 12px;\n  color: #999;\n  text-transform: none;\n}\n.content-wrapper {\n  position: relative;\n}\nnav h1 {\n  cursor: pointer;\n}\nnav .new-session {\n  position: absolute;\n  top: 25px;\n  right: 0;\n  cursor: pointer;\n  color: #41B6FF;\n}\n.session {\n  position: relative;\n  border: 1px solid #41B6FF;\n  padding: 10px;\n  margin-bottom: 10px;\n  height: 20px;\n  overflow: hidden;\n}\n.session[data-is-active=\"true\"] {\n  height: auto;\n}\n.session .label {\n  margin-bottom: 5px;\n}\n.session .date {\n  display: inline-block;\n  width: 100px;\n  margin-bottom: 20px;\n}\n.session .options {\n  display: inline-block;\n  cursor: pointer;\n}\n.session .edit,\n.session .delete {\n  display: inline-block;\n  margin-left: 10px;\n  padding: 5px;\n}\n.session .delete {\n  color: red;\n}\n.session .caret-wrapper {\n  position: absolute;\n  top: 5px;\n  right: 10px;\n  padding: 5px;\n  cursor: pointer;\n}\n.session .caret {\n  width: 12px;\n  height: 12px;\n  box-sizing: border-box;\n  border-bottom: 1px solid #999;\n  border-right: 1px solid #999;\n  transform: rotateZ(45deg);\n  transition: transform 300ms ease-in-out;\n}\n.session .caret[data-is-expanded=\"true\"] {\n  transform: translate3d(0, 8px, 0) rotateZ(-135deg);\n}\n.session .input-wrapper {\n  width: 100%;\n}\n.session .date-wrapper,\n.session .tables-wrapper {\n  margin-bottom: 20px;\n}\n.session .tables {\n  display: flex;\n  flex-wrap: wrap;\n}\n.session .table {\n  display: inline-block;\n  background-color: #41B6FF;\n  color: #FFF;\n  font-size: 14px;\n  padding: 2px 6px;\n  margin-right: 5px;\n  margin-bottom: 5px;\n}\n.session .player {\n  background-color: #EEE;\n  display: flex;\n  padding: 2px 6px;\n  margin-bottom: 5px;\n}\n.session .player span {\n  font-size: 14px;\n  color: #333;\n}\n.session .player span.name {\n  width: 50%;\n}\n.session .player span.money {\n  margin-right: 0;\n  margin-left: auto;\n}\n", ""]);
 
 // exports
 
@@ -65402,6 +65285,294 @@ module.exports = function(module) {
 	return module;
 };
 
+
+/***/ }),
+/* 473 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(61);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _getMoney = __webpack_require__(358);
+
+var _getMoney2 = _interopRequireDefault(_getMoney);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Players = function (_React$Component) {
+  _inherits(Players, _React$Component);
+
+  function Players() {
+    _classCallCheck(this, Players);
+
+    return _possibleConstructorReturn(this, (Players.__proto__ || Object.getPrototypeOf(Players)).apply(this, arguments));
+  }
+
+  _createClass(Players, [{
+    key: 'renderPlayers',
+    value: function renderPlayers() {
+      var _this2 = this;
+
+      var _props = this.props,
+          session = _props.session,
+          activePlayer = _props.activePlayer;
+
+      return session.players.map(function (player, i) {
+        if (_this2.props.view === 'edit') {
+          return _react2.default.createElement(
+            'div',
+            {
+              className: 'input-wrapper',
+              'data-is-active': i === activePlayer,
+              key: i,
+              onClick: function onClick() {
+                return _this2.props.setActivePlayer(i);
+              }
+            },
+            _react2.default.createElement('input', {
+              type: 'text',
+              placeholder: 'Player Name',
+              value: player.name,
+              onChange: function onChange(e) {
+                return _this2.props.updateActivePlayer(e, 'name');
+              }
+            }),
+            _react2.default.createElement('input', {
+              type: 'time',
+              step: 15 * 60,
+              value: player.startTime,
+              onChange: function onChange(e) {
+                return _this2.props.updateActivePlayer(e, 'startTime');
+              }
+            }),
+            _react2.default.createElement(
+              'span',
+              null,
+              '-'
+            ),
+            _react2.default.createElement('input', {
+              type: 'time',
+              step: 15 * 60,
+              value: player.endTime,
+              onChange: function onChange(e) {
+                return _this2.props.updateActivePlayer(e, 'endTime');
+              }
+            }),
+            i !== 0 && _react2.default.createElement(
+              'div',
+              { className: 'delete', onClick: function onClick() {
+                  return _this2.props.deletePlayer(i);
+                } },
+              '\u2715'
+            )
+          );
+        } else {
+          return _react2.default.createElement(
+            'div',
+            { className: 'player', key: i },
+            _react2.default.createElement(
+              'span',
+              { className: 'name' },
+              player.name
+            ),
+            _react2.default.createElement(
+              'span',
+              { className: 'time' },
+              player.startTime,
+              '-',
+              player.endTime
+            ),
+            _react2.default.createElement(
+              'span',
+              { className: 'money' },
+              '$',
+              (0, _getMoney2.default)(session, player)
+            )
+          );
+        }
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props2 = this.props,
+          view = _props2.view,
+          addPlayer = _props2.addPlayer;
+
+
+      return _react2.default.createElement(
+        'div',
+        { className: 'players-wrapper' },
+        _react2.default.createElement(
+          'p',
+          { className: 'label' },
+          'Players'
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'players' },
+          this.renderPlayers(),
+          view === 'edit' && _react2.default.createElement(
+            'button',
+            { onClick: addPlayer },
+            '+ Add Player'
+          )
+        )
+      );
+    }
+  }]);
+
+  return Players;
+}(_react2.default.Component);
+
+exports.default = Players;
+
+/***/ }),
+/* 474 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(61);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Tables = function (_React$Component) {
+  _inherits(Tables, _React$Component);
+
+  function Tables() {
+    _classCallCheck(this, Tables);
+
+    return _possibleConstructorReturn(this, (Tables.__proto__ || Object.getPrototypeOf(Tables)).apply(this, arguments));
+  }
+
+  _createClass(Tables, [{
+    key: 'renderTables',
+    value: function renderTables() {
+      var _this2 = this;
+
+      var _props = this.props,
+          session = _props.session,
+          activeTable = _props.activeTable,
+          view = _props.view;
+
+      return session.tables.map(function (table, i) {
+        if (view === 'edit') {
+          return _react2.default.createElement(
+            'div',
+            {
+              className: 'input-wrapper',
+              'data-is-active': i === activeTable,
+              key: 'table-' + i,
+              onClick: function onClick() {
+                return _this2.props.setActiveTable(i);
+              }
+            },
+            _react2.default.createElement('input', {
+              type: 'time',
+              step: 15 * 60,
+              value: table.startTime,
+              onChange: function onChange(e) {
+                return _this2.props.updateActiveTable(e, 'startTime');
+              }
+            }),
+            _react2.default.createElement(
+              'span',
+              null,
+              '-'
+            ),
+            _react2.default.createElement('input', {
+              type: 'time',
+              step: 15 * 60,
+              value: table.endTime,
+              onChange: function onChange(e) {
+                return _this2.props.updateActiveTable(e, 'endTime');
+              }
+            }),
+            i !== 0 && _react2.default.createElement(
+              'div',
+              { className: 'delete', onClick: function onClick() {
+                  return _this2.props.deleteTable(i);
+                } },
+              '\u2715'
+            )
+          );
+        } else {
+          return _react2.default.createElement(
+            'div',
+            { className: 'table', key: i },
+            table.startTime,
+            ' - ',
+            table.endTime
+          );
+        }
+      });
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _props2 = this.props,
+          view = _props2.view,
+          addTable = _props2.addTable;
+
+
+      return _react2.default.createElement(
+        'div',
+        { className: 'tables-wrapper' },
+        _react2.default.createElement(
+          'p',
+          { className: 'label' },
+          'Tables'
+        ),
+        _react2.default.createElement(
+          'div',
+          { className: 'tables' },
+          this.renderTables(),
+          view === 'edit' && _react2.default.createElement(
+            'button',
+            { onClick: addTable },
+            '+ Add Table'
+          )
+        )
+      );
+    }
+  }]);
+
+  return Tables;
+}(_react2.default.Component);
+
+exports.default = Tables;
 
 /***/ })
 /******/ ]);
