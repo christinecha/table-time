@@ -246,7 +246,7 @@ class Session extends React.Component {
         {isActive &&
         <div className='options'>
           {view === 'edit' || <div className='edit label' onClick={this.props.handleEdit}>edit</div>}
-          <div className='delete label' onClick={this.handleDelete}>delete</div>
+          {view === 'edit' && <div className='delete label' onClick={this.handleDelete}>delete</div>}
         </div>
         }
 
