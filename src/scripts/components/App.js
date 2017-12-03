@@ -33,10 +33,17 @@ class App extends React.Component {
     })
   }
 
+  newSession() {
+    this.setState({
+      view: 'edit',
+      activeSession: null,
+    })
+  }
+
   renderView() {
     const { sessions, view, activeSession } = this.state
 
-    const session = activeSession ? sessions[ activeSession ] : {}
+    const session = activeSession ? sessions[ activeSession ] : null
 
     if ( view === 'edit' ) {
       return (
@@ -69,7 +76,8 @@ class App extends React.Component {
     return (
       <main>
         <nav>
-          <h1>table time</h1>
+          <h1 onClick={() => this.setState({ view: 'feed' })}>table time</h1>
+          <div className='new-session' onClick={() => this.newSession()}>+ new session</div>
         </nav>
         {this.renderView()}
       </main>

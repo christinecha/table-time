@@ -17,15 +17,16 @@ const getDuration = ( data ) => {
   return hourDiff + minDiff / 60
 }
 
-const getMoney = ( tables, player ) => {
+const getMoney = ( session, player ) => {
+  const { tables, players } = session
   let tableTime = 0
+  let playingTime = 0
 
-  tables.forEach(( table ) => {
-    tableTime += getDuration( table )
-  })
+  tables.forEach(( table ) => tableTime += getDuration( table ))
+  players.forEach(( player ) => playingTime += getDuration( player ))
 
   const playerTime = getDuration( player )
-  const moneys = playerTime / tableTime * TABLE_PER_HOUR
+  const moneys = playerTime / playingTime * tableTime * TABLE_PER_HOUR
 
   return moneys.toFixed( 2 )
 }

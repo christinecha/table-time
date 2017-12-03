@@ -188,7 +188,6 @@ class Session extends React.Component {
             className='input-wrapper'
             data-is-active={i === activeTable}
             key={`table-${ i }`}
-            data-key={`table-${ i }`}
             onClick={() => this.setState({ activeTable: i })}
           >
             <input
@@ -227,6 +226,7 @@ class Session extends React.Component {
             className='input-wrapper'
             data-is-active={i === activePlayer}
             key={i}
+            onClick={() => this.setState({ activePlayer: i })}
           >
             <input
               type='text'
@@ -256,7 +256,7 @@ class Session extends React.Component {
           <div className='player' key={i}>
             <span className='name'>{player.name}</span>
             <span className='time'>{player.startTime}-{player.endTime}</span>
-            <span className='money'>${getMoney( session.tables, player )}</span>
+            <span className='money'>${getMoney( session, player )}</span>
           </div>
         )
       }
@@ -269,11 +269,14 @@ class Session extends React.Component {
 
     if ( this.props.view === 'edit' ) {
       return (
-        <input
-          type='date'
-          value={session.date}
-          onChange={( e ) => this.handleSessionChange( e, 'date' )}
-        />
+        <div className='date-wrapper'>
+          <p className='label'>Date</p>
+          <input
+            type='date'
+            value={session.date}
+            onChange={( e ) => this.handleSessionChange( e, 'date' )}
+          />
+        </div>
       )
     }
     else {
