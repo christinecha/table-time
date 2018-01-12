@@ -1,4 +1,5 @@
 import React from 'react'
+import moment from 'moment'
 import getMoney from '../lib/getMoney'
 
 class Players extends React.Component {
@@ -43,10 +44,13 @@ class Players extends React.Component {
         )
       }
       else {
+        const start = moment( player.startTime, 'HH:mm' ).format( 'h:mm' )
+        const end = moment( player.endTime, 'HH:mm' ).format( 'h:mm' )
+
         return (
           <div className='player' key={i}>
             <span className='name'>{player.name}</span>
-            <span className='time'>{player.startTime}-{player.endTime}</span>
+            <span className='time'>{start} - {end}</span>
             <span className='money'>${getMoney( session, player )}</span>
           </div>
         )

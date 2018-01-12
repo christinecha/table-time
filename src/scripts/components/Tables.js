@@ -1,4 +1,5 @@
 import React from 'react'
+import moment from 'moment'
 
 class Tables extends React.Component {
   renderTables() {
@@ -30,9 +31,12 @@ class Tables extends React.Component {
         )
       }
       else {
+        const start = moment( table.startTime, 'HH:mm' ).format( 'h:mm A' )
+        const end = moment( table.endTime, 'HH:mm' ).format( 'h:mm A' )
+
         return (
           <div className='table' key={i}>
-            {table.startTime} - {table.endTime}
+            {start} - {end}
           </div>
         )
       }
