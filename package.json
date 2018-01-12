@@ -1,7 +1,7 @@
 {
-  "name": "tastebud",
+  "name": "tabletime",
   "version": "0.0.0",
-  "description": "A web app that helps you find places you trust.",
+  "description": "Split table tennis time - and money.",
   "main": "server/app.js",
   "repository": "https://github.com/christinecha/tabletime",
   "scripts": {

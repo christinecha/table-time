@@ -13,27 +13,32 @@ class Players extends React.Component {
             key={i}
             onClick={() => this.props.setActivePlayer( i )}
           >
-            <input
-              className='player-name'
-              type='text'
-              placeholder='Player Name'
-              value={player.name}
-              onChange={( e ) => this.props.updateActivePlayer( e, 'name' )}
-            />
-            <input
-              type='time'
-              step={15 * 60}
-              value={player.startTime}
-              onChange={( e ) => this.props.updateActivePlayer( e, 'startTime' )}
-            />
-            <span>-</span>
-            <input
-              type='time'
-              step={15 * 60}
-              value={player.endTime}
-              onChange={( e ) => this.props.updateActivePlayer( e, 'endTime' )}
-            />
-            {i !== 0 && <div className='delete' onClick={() => this.props.deletePlayer( i )}>✕</div>}
+            <div className='row'>
+              <input
+                className='player-name'
+                type='text'
+                placeholder='Player Name'
+                value={player.name}
+                onChange={( e ) => this.props.updateActivePlayer( e, 'name' )}
+              />
+              {i > 1 && <div className='delete' onClick={() => this.props.deletePlayer( i )}>✕</div>}
+            </div>
+            <div className='row'>
+              <input
+                type='time'
+                step={15 * 60}
+                value={player.startTime}
+                onChange={( e ) => this.props.updateActivePlayer( e, 'startTime' )}
+              />
+              <span>-</span>
+              <input
+                type='time'
+                step={15 * 60}
+                value={player.endTime}
+                onChange={( e ) => this.props.updateActivePlayer( e, 'endTime' )}
+              />
+              <div className='label extend' onClick={() => this.props.extendPlayer( i )}>Extend</div>
+            </div>
           </div>
         )
       }

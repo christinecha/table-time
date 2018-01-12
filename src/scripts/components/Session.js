@@ -17,11 +17,11 @@ const DEFAULT_TABLE = () => {
   }
 }
 
-const DEFAULT_PLAYER = () => {
+const DEFAULT_PLAYER = ( startTime = DEFAULT_START_TIME, endTime = DEFAULT_END_TIME ) => {
   return {
     name: '',
-    startTime: DEFAULT_START_TIME,
-    endTime: DEFAULT_END_TIME,
+    startTime,
+    endTime,
   }
 }
 
@@ -30,7 +30,15 @@ const DEFAULT_SESSION = {
   date: DEFAULT_DATE,
   createdBy: '',
   tables: [ DEFAULT_TABLE() ],
-  players: [ DEFAULT_PLAYER() ],
+  players: [ DEFAULT_PLAYER(), DEFAULT_PLAYER() ],
+  latestEndTime: DEFAULT_END_TIME,
+}
+
+const getFormattedNow = () => {
+  const now = moment()
+  const minutes = Math.floor( now.minutes() / 15 ) * 15
+  const formattedNow = now.minutes( minutes ).format( 'HH:mm' )
+  return formattedNow
 }
 
 class Session extends React.Component {
@@ -76,7 +84,13 @@ class Session extends React.Component {
     const { session, activeTable } = this.state
     const tables = session.tables.slice()
     tables[ activeTable ][ key ] = e.target.value
-    this.updateSession({ tables })
+
+    const latestEndTime = tables.reduce(( time, table ) => {
+      if ( table.endTime > time ) return table.endTime
+      return time
+    }, '00:00' )
+
+    this.updateSession({ tables, latestEndTime })
   }
 
   updateActivePlayer( e, key ) {
@@ -87,6 +101,13 @@ class Session extends React.Component {
     this.updateSession({ players })
   }
 
+  extendPlayer( i ) {
+    const { session } = this.state
+    const players = session.players
+    players[ i ].endTime = session.latestEndTime
+    this.updateSession({ players })
+  }
+
   handleSessionChange( e, key ) {
     const { session } = this.state
     session[ key ] = e.target.value
@@ -94,8 +115,8 @@ class Session extends React.Component {
   }
 
   addPlayer() {
-    const { players } = this.state.session
-    players.push( DEFAULT_PLAYER())
+    const { players, latestEndTime } = this.state.session
+    players.push( DEFAULT_PLAYER( getFormattedNow(), latestEndTime ))
     const activePlayer = players.length - 1
     this.updateSession({ players })
     this.setState({ activePlayer })
@@ -190,7 +211,7 @@ class Session extends React.Component {
   }
 
   renderDate() {
-    const { session, isValid, error } = this.state
+    const { session } = this.state
     const date = moment( session.date, 'YYYY-MM-DD' )
 
     if ( this.props.view === 'edit' ) {
@@ -234,6 +255,10 @@ class Session extends React.Component {
     const { session, activePlayer, activeTable } = this.state
     const { view, isActive } = this.props
 
+    const sessionMoment = moment( session.date )
+    const nowMoment = moment()
+    const isOldSession = sessionMoment.isBefore( nowMoment.subtract( 3, 'days' ))
+
     return (
       <div
         className={`session ${ view }-view`}
@@ -246,7 +271,7 @@ class Session extends React.Component {
         {isActive &&
         <div className='options'>
           {view === 'edit' || <div className='edit label' onClick={this.props.handleEdit}>edit</div>}
-          {view === 'edit' && <div className='delete label' onClick={this.handleDelete}>delete</div>}
+          {view === 'edit' && !isOldSession && <div className='delete label' onClick={this.handleDelete}>delete</div>}
         </div>
         }
 
@@ -272,6 +297,7 @@ class Session extends React.Component {
           view={view}
           addPlayer={this.addPlayer.bind( this )}
           deletePlayer={this.deletePlayer.bind( this )}
+          extendPlayer={this.extendPlayer.bind( this )}
           updateActivePlayer={this.updateActivePlayer.bind( this )}
           setActivePlayer={this.setActivePlayer.bind( this )}
         />
