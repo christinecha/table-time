@@ -65654,7 +65654,7 @@ module.exports = function(module) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var isMobile = 'touchstart' in window;
+var isMobile = 'ontouchstart' in window;
 
 var getVenmoLink = function getVenmoLink(amount, note) {
   note = encodeURIComponent(note + ' \uD83C\uDFD3');

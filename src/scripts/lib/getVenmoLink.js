@@ -1,4 +1,4 @@
-const isMobile = 'touchstart' in window
+const isMobile = 'ontouchstart' in window
 
 const getVenmoLink = ( amount, note ) => {
   note = encodeURIComponent( `${ note } 🏓` )
