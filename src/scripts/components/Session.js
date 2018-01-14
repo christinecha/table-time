@@ -6,9 +6,16 @@ import Tables from './Tables'
 
 import { ref } from '../constants/firebase'
 
+const getFormattedNow = () => {
+  const now = moment()
+  const minutes = Math.floor( now.minutes() / 15 ) * 15
+  const formattedNow = now.minutes( minutes ).format( 'HH:mm' )
+  return formattedNow
+}
+
 const DEFAULT_DATE = moment().format( 'YYYY-MM-DD' )
-const DEFAULT_START_TIME = '17:30'
-const DEFAULT_END_TIME = '20:30'
+const DEFAULT_START_TIME = getFormattedNow()
+const DEFAULT_END_TIME = moment( DEFAULT_START_TIME, 'HH:mm' ).add( 2, 'hours' ).format( 'HH:mm' )
 
 const DEFAULT_TABLE = () => {
   return {
@@ -32,13 +39,6 @@ const DEFAULT_SESSION = {
   tables: [ DEFAULT_TABLE() ],
   players: [ DEFAULT_PLAYER(), DEFAULT_PLAYER() ],
   latestEndTime: DEFAULT_END_TIME,
-}
-
-const getFormattedNow = () => {
-  const now = moment()
-  const minutes = Math.floor( now.minutes() / 15 ) * 15
-  const formattedNow = now.minutes( minutes ).format( 'HH:mm' )
-  return formattedNow
 }
 
 class Session extends React.Component {

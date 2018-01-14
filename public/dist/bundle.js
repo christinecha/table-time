@@ -51353,9 +51353,16 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var getFormattedNow = function getFormattedNow() {
+  var now = (0, _moment2.default)();
+  var minutes = Math.floor(now.minutes() / 15) * 15;
+  var formattedNow = now.minutes(minutes).format('HH:mm');
+  return formattedNow;
+};
+
 var DEFAULT_DATE = (0, _moment2.default)().format('YYYY-MM-DD');
-var DEFAULT_START_TIME = '17:30';
-var DEFAULT_END_TIME = '20:30';
+var DEFAULT_START_TIME = getFormattedNow();
+var DEFAULT_END_TIME = (0, _moment2.default)(DEFAULT_START_TIME, 'HH:mm').add(2, 'hours').format('HH:mm');
 
 var DEFAULT_TABLE = function DEFAULT_TABLE() {
   return {
@@ -51382,13 +51389,6 @@ var DEFAULT_SESSION = {
   tables: [DEFAULT_TABLE()],
   players: [DEFAULT_PLAYER(), DEFAULT_PLAYER()],
   latestEndTime: DEFAULT_END_TIME
-};
-
-var getFormattedNow = function getFormattedNow() {
-  var now = (0, _moment2.default)();
-  var minutes = Math.floor(now.minutes() / 15) * 15;
-  var formattedNow = now.minutes(minutes).format('HH:mm');
-  return formattedNow;
 };
 
 var Session = function (_React$Component) {
