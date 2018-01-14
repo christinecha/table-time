@@ -51153,6 +51153,10 @@ var _getMoney = __webpack_require__(360);
 
 var _getMoney2 = _interopRequireDefault(_getMoney);
 
+var _getVenmoLink = __webpack_require__(475);
+
+var _getVenmoLink2 = _interopRequireDefault(_getVenmoLink);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -51247,10 +51251,12 @@ var Players = function (_React$Component) {
         } else {
           var start = (0, _moment2.default)(player.startTime, 'HH:mm').format('h:mm');
           var end = (0, _moment2.default)(player.endTime, 'HH:mm').format('h:mm');
+          var money = (0, _getMoney2.default)(session, player);
+          var dayOfTheWeek = (0, _moment2.default)(session.date).format('dddd');
 
           return _react2.default.createElement(
-            'div',
-            { className: 'player', key: i },
+            'a',
+            { className: 'player', key: i, href: (0, _getVenmoLink2.default)(money, dayOfTheWeek) },
             _react2.default.createElement(
               'span',
               { className: 'name' },
@@ -51267,7 +51273,7 @@ var Players = function (_React$Component) {
               'span',
               { className: 'money' },
               '$',
-              (0, _getMoney2.default)(session, player)
+              money
             )
           );
         }
@@ -52827,7 +52833,7 @@ exports = module.exports = __webpack_require__(363)();
 
 
 // module
-exports.push([module.i, "* {\n  margin: 0;\n  padding: 0;\n}\n* {\n  font-family: 'Circular', sans-serif;\n  font-weight: 300;\n  line-height: 1.3em;\n}\n::-ms-clear {\n  display: none;\n}\n::-ms-reveal {\n  display: none;\n}\n::-webkit-search-decoration,\n::-webkit-search-cancel-button,\n::-webkit-search-results-button,\n::-webkit-search-results-decoration,\n::-webkit-inner-spin-button,\n::-webkit-outer-spin-button,\n::-webkit-inner-spin-button,\n::-webkit-clear-button {\n  -webkit-appearance: none;\n  display: none;\n}\nmain {\n  position: relative;\n  width: 90%;\n  max-width: 600px;\n  margin: 0 auto;\n  box-sizing: border-box;\n}\nnav {\n  margin-bottom: 10px;\n  padding: 20px 0;\n}\nbutton {\n  border: none;\n  box-sizing: border-box;\n  border-radius: 0;\n  padding: 0 10px;\n  margin: 5px;\n  font-size: 16px;\n  height: 30px;\n  background-color: #41B6FF;\n  color: #FFF;\n  cursor: pointer;\n}\nbutton.plain {\n  background-color: transparent;\n  color: #41B6FF;\n  padding: 0;\n}\ninput {\n  box-sizing: border-box;\n  font-size: 16px;\n  height: 30px;\n  border: 1px solid #EEE;\n  padding: 0 10px;\n  margin: 5px;\n}\nh1 {\n  font-size: 22px;\n}\nh3 {\n  font-size: 18px;\n  font-weight: 500;\n}\nh4 {\n  font-size: 36px;\n  font-weight: 200;\n}\nh5 {\n  font-weight: 500;\n  font-size: 12px;\n  letter-spacing: 0.02em;\n}\nh6 {\n  text-transform: uppercase;\n  color: #999;\n  font-weight: 300;\n  font-size: 13px;\n}\na {\n  color: inherit;\n  text-decoration: none;\n}\n.label {\n  font-size: 10px;\n  text-transform: uppercase;\n  color: #999;\n  letter-spacing: 0.1em;\n}\n.small {\n  font-size: 12px;\n  color: #999;\n  text-transform: none;\n}\n.content-wrapper {\n  position: relative;\n}\nnav h1 {\n  cursor: pointer;\n}\nnav .new-session {\n  position: absolute;\n  top: 25px;\n  right: 0;\n  cursor: pointer;\n  color: #41B6FF;\n}\n.session {\n  position: relative;\n  border: 1px solid #41B6FF;\n  padding: 10px;\n  margin-bottom: 10px;\n  height: 20px;\n  overflow: hidden;\n}\n.session[data-is-active=\"true\"] {\n  height: auto;\n}\n.session.edit-view .options {\n  position: absolute;\n  top: 8px;\n  right: 10px;\n}\n.session.edit-view input:first-of-type,\n.session.edit-view button {\n  margin-left: 0;\n}\n.session.edit-view .players input:nth-child(2) {\n  margin-left: 0;\n}\n.session .label {\n  margin-bottom: 5px;\n}\n.session .date {\n  display: inline-block;\n  margin-bottom: 20px;\n}\n.session .options {\n  display: inline-block;\n  cursor: pointer;\n}\n.session .edit,\n.session .delete {\n  display: inline-block;\n  margin-left: 5px;\n  padding: 5px 10px;\n}\n.session .delete {\n  color: red;\n}\n.session .caret-wrapper {\n  position: absolute;\n  top: 5px;\n  right: 10px;\n  padding: 5px;\n  cursor: pointer;\n}\n.session .caret {\n  width: 12px;\n  height: 12px;\n  box-sizing: border-box;\n  border-bottom: 1px solid #999;\n  border-right: 1px solid #999;\n  transform: rotateZ(45deg);\n  transition: transform 300ms ease-in-out;\n}\n.session .caret[data-is-expanded=\"true\"] {\n  transform: translate3d(0, 8px, 0) rotateZ(-135deg);\n}\n.session .input-wrapper {\n  width: 100%;\n}\n.session .date-wrapper,\n.session .tables-wrapper {\n  margin-bottom: 30px;\n}\n.session .tables {\n  display: flex;\n  flex-wrap: wrap;\n}\n.session .table {\n  display: inline-block;\n  background-color: #41B6FF;\n  color: #FFF;\n  font-size: 14px;\n  padding: 2px 6px;\n  margin-right: 5px;\n  margin-bottom: 5px;\n}\n.session .players .input-wrapper {\n  margin-bottom: 15px;\n}\n.session .players .row {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n.session .players .row:nth-child(2) {\n  justify-content: flex-start;\n}\n.session .players input.player-name {\n  width: 85%;\n  margin-right: 15px;\n}\n.session .players .extend {\n  width: 50px;\n  margin-bottom: 0;\n  margin-left: 15px;\n}\n.session .player {\n  background-color: #EEE;\n  display: flex;\n  padding: 2px 6px;\n  margin-bottom: 5px;\n}\n.session .player span {\n  font-size: 14px;\n  color: #333;\n}\n.session .player span.name {\n  width: 45%;\n}\n.session .player span.money {\n  margin-right: 0;\n  margin-left: auto;\n}\n.session .save-session {\n  width: 100%;\n  margin-top: 20px;\n  background-color: #2430A4;\n  height: 40px;\n}\n", ""]);
+exports.push([module.i, "* {\n  margin: 0;\n  padding: 0;\n}\n* {\n  font-family: 'Circular', sans-serif;\n  font-weight: 300;\n  line-height: 1.3em;\n}\n::-ms-clear {\n  display: none;\n}\n::-ms-reveal {\n  display: none;\n}\n::-webkit-search-decoration,\n::-webkit-search-cancel-button,\n::-webkit-search-results-button,\n::-webkit-search-results-decoration,\n::-webkit-inner-spin-button,\n::-webkit-outer-spin-button,\n::-webkit-inner-spin-button,\n::-webkit-clear-button {\n  -webkit-appearance: none;\n  display: none;\n}\nmain {\n  position: relative;\n  width: 90%;\n  max-width: 600px;\n  margin: 0 auto;\n  box-sizing: border-box;\n}\nnav {\n  margin-bottom: 10px;\n  padding: 20px 0;\n}\nbutton {\n  border: none;\n  box-sizing: border-box;\n  border-radius: 0;\n  padding: 0 10px;\n  margin: 5px;\n  font-size: 16px;\n  height: 30px;\n  background-color: #41B6FF;\n  color: #FFF;\n  cursor: pointer;\n}\nbutton.plain {\n  background-color: transparent;\n  color: #41B6FF;\n  padding: 0;\n}\ninput {\n  box-sizing: border-box;\n  font-size: 16px;\n  height: 30px;\n  border: 1px solid #EEE;\n  padding: 0 10px;\n  margin: 5px;\n}\nh1 {\n  font-size: 22px;\n}\nh3 {\n  font-size: 18px;\n  font-weight: 500;\n}\nh4 {\n  font-size: 36px;\n  font-weight: 200;\n}\nh5 {\n  font-weight: 500;\n  font-size: 12px;\n  letter-spacing: 0.02em;\n}\nh6 {\n  text-transform: uppercase;\n  color: #999;\n  font-weight: 300;\n  font-size: 13px;\n}\na {\n  color: inherit;\n  text-decoration: none;\n}\n.label {\n  font-size: 10px;\n  text-transform: uppercase;\n  color: #999;\n  letter-spacing: 0.1em;\n}\n.small {\n  font-size: 12px;\n  color: #999;\n  text-transform: none;\n}\n.content-wrapper {\n  position: relative;\n}\nnav h1 {\n  cursor: pointer;\n}\nnav .new-session {\n  position: absolute;\n  top: 25px;\n  right: 0;\n  cursor: pointer;\n  color: #41B6FF;\n}\n.session {\n  position: relative;\n  border: 1px solid #41B6FF;\n  padding: 10px;\n  margin-bottom: 10px;\n  height: 20px;\n  overflow: hidden;\n}\n.session[data-is-active=\"true\"] {\n  height: auto;\n}\n.session.edit-view .options {\n  position: absolute;\n  top: 8px;\n  right: 10px;\n}\n.session.edit-view input:first-of-type,\n.session.edit-view button {\n  margin-left: 0;\n}\n.session.edit-view .players input:nth-child(2) {\n  margin-left: 0;\n}\n.session .label {\n  margin-bottom: 5px;\n}\n.session .date {\n  display: inline-block;\n  margin-bottom: 20px;\n}\n.session .options {\n  display: inline-block;\n  cursor: pointer;\n}\n.session .edit,\n.session .delete {\n  display: inline-block;\n  margin-left: 5px;\n  padding: 5px 10px;\n}\n.session .delete {\n  color: red;\n}\n.session .caret-wrapper {\n  position: absolute;\n  top: 5px;\n  right: 10px;\n  padding: 5px;\n  cursor: pointer;\n}\n.session .caret {\n  width: 12px;\n  height: 12px;\n  box-sizing: border-box;\n  border-bottom: 1px solid #999;\n  border-right: 1px solid #999;\n  transform: rotateZ(45deg);\n  transition: transform 300ms ease-in-out;\n}\n.session .caret[data-is-expanded=\"true\"] {\n  transform: translate3d(0, 8px, 0) rotateZ(-135deg);\n}\n.session .input-wrapper {\n  width: 100%;\n}\n.session .date-wrapper,\n.session .tables-wrapper {\n  margin-bottom: 30px;\n}\n.session .tables {\n  display: flex;\n  flex-wrap: wrap;\n}\n.session .table {\n  display: inline-block;\n  background-color: #41B6FF;\n  color: #FFF;\n  font-size: 14px;\n  padding: 2px 6px;\n  margin-right: 5px;\n  margin-bottom: 5px;\n}\n.session .players .input-wrapper {\n  margin-bottom: 15px;\n}\n.session .players .row {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n}\n.session .players .row:nth-child(2) {\n  justify-content: flex-start;\n}\n.session .players input.player-name {\n  width: 85%;\n  margin-right: 15px;\n}\n.session .players .extend {\n  width: 50px;\n  margin-bottom: 0;\n  margin-left: 15px;\n}\n.session .player {\n  background-color: #EEE;\n  display: flex;\n  padding: 6px;\n  margin-bottom: 5px;\n}\n.session .player span {\n  font-size: 14px;\n  color: #333;\n}\n.session .player span.name {\n  width: 45%;\n}\n.session .player span.money {\n  margin-right: 0;\n  margin-left: auto;\n}\n.session .save-session {\n  width: 100%;\n  margin-top: 20px;\n  background-color: #2430A4;\n  height: 40px;\n}\n", ""]);
 
 // exports
 
@@ -65637,6 +65643,27 @@ module.exports = function(module) {
 	return module;
 };
 
+
+/***/ }),
+/* 475 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var isMobile = 'touchstart' in window;
+
+var getVenmoLink = function getVenmoLink(amount, note) {
+  note = encodeURIComponent(note + ' \uD83C\uDFD3');
+
+  if (isMobile) return 'venmo://paycharge?txn=charge&amount=' + amount + '&note=' + note;
+  return 'https://venmo.com/?txn=charge&amount=' + amount + '&note=' + note;
+};
+
+exports.default = getVenmoLink;
 
 /***/ })
 /******/ ]);

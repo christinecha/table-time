@@ -1,6 +1,7 @@
 import React from 'react'
 import moment from 'moment'
 import getMoney from '../lib/getMoney'
+import getVenmoLink from '../lib/getVenmoLink'
 
 class Players extends React.Component {
   renderPlayers() {
@@ -46,13 +47,15 @@ class Players extends React.Component {
       else {
         const start = moment( player.startTime, 'HH:mm' ).format( 'h:mm' )
         const end = moment( player.endTime, 'HH:mm' ).format( 'h:mm' )
+        const money = getMoney( session, player )
+        const dayOfTheWeek = moment( session.date ).format( 'dddd' )
 
         return (
-          <div className='player' key={i}>
+          <a className='player' key={i} href={getVenmoLink( money, dayOfTheWeek )}>
             <span className='name'>{player.name}</span>
             <span className='time'>{start} - {end}</span>
-            <span className='money'>${getMoney( session, player )}</span>
-          </div>
+            <span className='money'>${money}</span>
+          </a>
         )
       }
     })
