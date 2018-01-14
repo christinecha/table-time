@@ -1,9 +1,40 @@
 import React from 'react'
+import { Creatable } from 'react-select'
+
 import moment from 'moment'
+import { ref } from '../constants/firebase'
 import getMoney from '../lib/getMoney'
 import getVenmoLink from '../lib/getVenmoLink'
 
 class Players extends React.Component {
+  constructor( props ) {
+    super( props )
+    this.state = {
+      options: [],
+    }
+  }
+
+  componentWillMount() {
+    ref.child( 'sessions' ).orderByChild( 'date' ).once( 'value', ( snapshot ) => {
+      const playerNames = []
+
+      snapshot.forEach(( childSnapshot ) =>  {
+        const session = childSnapshot.val()
+        session.players.forEach(( player ) => {
+          if ( playerNames.indexOf( player.name ) < 0 ) playerNames.push( player.name )
+        })
+      })
+
+      const options = []
+      playerNames.sort().forEach(( name ) => {
+        const option = { value: name, label: name }
+        options.push( option )
+      })
+
+      this.setState({ options })
+    })
+  }
+
   renderPlayers() {
     const { session, activePlayer } = this.props
     return session.players.map(( player, i ) => {
@@ -16,12 +47,13 @@ class Players extends React.Component {
             onClick={() => this.props.setActivePlayer( i )}
           >
             <div className='row'>
-              <input
+              <Creatable
                 className='player-name'
-                type='text'
                 placeholder='Player Name'
                 value={player.name}
+                options={this.state.options}
                 onChange={( e ) => this.props.updateActivePlayer( e, 'name' )}
+                onFocus={() => this.props.setActivePlayer( i )}
               />
               {i > 1 && <div className='delete' onClick={() => this.props.deletePlayer( i )}>✕</div>}
             </div>
@@ -49,9 +81,10 @@ class Players extends React.Component {
         const end = moment( player.endTime, 'HH:mm' ).format( 'h:mm' )
         const money = getMoney( session, player )
         const dayOfTheWeek = moment( session.date ).format( 'dddd' )
+        const note = `${ dayOfTheWeek } (${ start } - ${ end })`
 
         return (
-          <a className='player' key={i} href={getVenmoLink( money, dayOfTheWeek )}>
+          <a className='player' key={i} href={getVenmoLink( money, note )}>
             <span className='name'>{player.name}</span>
             <span className='time'>{start} - {end}</span>
             <span className='money'>${money}</span>

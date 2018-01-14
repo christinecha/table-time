@@ -96,8 +96,14 @@ class Session extends React.Component {
   updateActivePlayer( e, key ) {
     // TODO: Invalidate if player time is outside of table time
     const { session, activePlayer } = this.state
-    const players = session.players
-    players[ activePlayer ][ key ] = e.target.value
+    const players = session.players.slice()
+
+    let newPlayer
+    if ( !e ) newPlayer = null
+    else if ( !e.target ) newPlayer = e.value
+    else newPlayer = e.target.value
+
+    players[ activePlayer ][ key ] = newPlayer
     this.updateSession({ players })
   }
 

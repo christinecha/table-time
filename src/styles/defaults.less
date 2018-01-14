@@ -11,7 +11,6 @@
 ::-webkit-search-cancel-button,
 ::-webkit-search-results-button,
 ::-webkit-search-results-decoration,
-::-webkit-inner-spin-button,
 ::-webkit-outer-spin-button,
 ::-webkit-inner-spin-button,
 ::-webkit-clear-button {
@@ -53,13 +52,17 @@ button {
   }
 }
 
-input {
+input, .Select-control {
   box-sizing: border-box;
   font-size: 16px;
   height: 30px;
+  background-color: transparent;
   border: 1px solid @light-gray;
+  border-radius: 0;
   padding: 0 10px;
   margin: 5px;
+  width: auto;
+  min-width: 100px;
 }
 
 h1 {

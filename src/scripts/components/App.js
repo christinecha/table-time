@@ -19,7 +19,8 @@ class App extends React.Component {
       const sessions = []
 
       snapshot.forEach(( childSnapshot ) =>  {
-        sessions.unshift( childSnapshot.val())
+        const session = childSnapshot.val()
+        sessions.unshift( session )
       })
 
       this.setState({ sessions })
@@ -60,7 +61,7 @@ class App extends React.Component {
   }
 
   renderView() {
-    const { sessions, view, activeSession, expandedSessions } = this.state
+    const { players, sessions, view, activeSession, expandedSessions } = this.state
 
     if ( view === 'edit' ) {
       return (
@@ -95,7 +96,7 @@ class App extends React.Component {
     return (
       <main>
         <nav>
-          <h1 onClick={() => this.setState({ view: 'feed' })}>table time</h1>
+          <h1 onClick={() => this.setState({ view: 'feed' })}>table time 🏓</h1>
           {
             this.state.view === 'feed' &&
             <div className='new-session' onClick={() => this.newSession()}>+ new session</div>
