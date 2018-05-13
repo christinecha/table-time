@@ -51972,6 +51972,8 @@ var _Tables = __webpack_require__(360);
 
 var _Tables2 = _interopRequireDefault(_Tables);
 
+var _getMoney = __webpack_require__(362);
+
 var _firebase = __webpack_require__(73);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -52185,21 +52187,42 @@ var Session = function (_React$Component) {
 
 
       var isValid = true;
+      var error = '';
 
-      session.tables.forEach(function (table) {
-        if (!table.startTime) isValid = false;
-        if (!table.endTime) isValid = false;
+      var rates = (0, _getMoney.getRates)(session);
+
+      rates.forEach(function (rate) {
+        if (rate.activePlayers.length < 1) {
+          isValid = false;
+          error = 'No active players between ' + rate.startTime + ' - ' + rate.endTime + '.';
+        }
+
+        if (rate.activeTables.length < 1) {
+          isValid = false;
+          error = 'No active tables between ' + rate.startTime + ' - ' + rate.endTime + '.';
+        }
+      });
+
+      session.tables.forEach(function (_ref) {
+        var startTime = _ref.startTime,
+            endTime = _ref.endTime;
+
+        if (!startTime || !endTime) {
+          isValid = false;
+          error = 'Please fill out all fields or delete empties.';
+        }
       });
 
       session.players.forEach(function (player) {
-        if (!player.name || !player.name.trim()) isValid = false;
-        if (!player.startTime) isValid = false;
-        if (!player.endTime) isValid = false;
+        if (!player.name || !player.name.trim() || !player.startTime || !player.endTime) {
+          isValid = false;
+          error = 'Please fill out all fields or delete empties.';
+        }
       });
 
       this.setState({
         isValid: isValid,
-        error: isValid ? '' : 'Please fill out all fields or delete empties.'
+        error: error
       });
 
       return isValid;
