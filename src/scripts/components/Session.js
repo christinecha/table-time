@@ -275,7 +275,7 @@ class Session extends React.Component {
     if ( this.props.view === 'edit' ) {
       return (
         <div>
-          <p className='error'>{isValid ? '' : error}</p>
+          <p className='error'>{isValid ? '' : `[Error] ${ error }`}</p>
           <button className='save-session' onClick={this.saveSession}>Save Session</button>
         </div>
       )
