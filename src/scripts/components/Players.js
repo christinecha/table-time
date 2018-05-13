@@ -3,7 +3,7 @@ import { Creatable } from 'react-select'
 
 import moment from 'moment'
 import { ref } from '../constants/firebase'
-import getMoney from '../lib/getMoney'
+import { getMoney, getRates, getCorrectMoney } from '../lib/getMoney'
 import getVenmoLink from '../lib/getVenmoLink'
 
 class Players extends React.Component {
@@ -37,6 +37,10 @@ class Players extends React.Component {
 
   renderPlayers() {
     const { session, activePlayer } = this.props
+
+    const isAfterCorrection = new Date( session.date ).getTime() >= 1526169600000
+    const rates = getRates( session )
+
     return session.players.map(( player, i ) => {
       if ( this.props.view === 'edit' ) {
         return (
@@ -79,9 +83,12 @@ class Players extends React.Component {
       else {
         const start = moment( player.startTime, 'HH:mm' ).format( 'h:mm' )
         const end = moment( player.endTime, 'HH:mm' ).format( 'h:mm' )
-        const money = getMoney( session, player )
+        const wrongMoney = getMoney( session, player )
+        const correctMoney = getCorrectMoney( rates, player )
         const dayOfTheWeek = moment( session.date ).format( 'dddd' )
         const note = `${ dayOfTheWeek } (${ start } - ${ end })`
+
+        const money = isAfterCorrection ? correctMoney : wrongMoney
 
         return (
           <a className='player' key={i} href={getVenmoLink( money, note )}>

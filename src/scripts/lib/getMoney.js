@@ -17,8 +17,56 @@ const getDuration = ( data ) => {
   return hourDiff + minDiff / 60
 }
 
-const getMoney = ( session, player ) => {
+export const getRates = ( session ) => {
   const { tables, players } = session
+
+  const units = tables.concat( players )
+  const intersects = []
+
+  units.forEach(({ startTime, endTime }) => {
+    if ( intersects.indexOf( startTime ) < 0 ) intersects.push( startTime )
+    if ( intersects.indexOf( endTime ) < 0   ) intersects.push( endTime )
+  })
+
+  intersects.sort()
+
+  const buckets = []
+
+  for ( let i = 1; i < intersects.length; i++ ) {
+    const startTime = intersects[ i - 1 ]
+    const endTime = intersects[ i ]
+    const duration = getDuration({ startTime, endTime })
+
+    const activePlayers = players.filter(( player ) => {
+      const hasStarted = player.startTime <= startTime
+      const stillPlaying = player.endTime >= endTime
+      return hasStarted && stillPlaying
+    })
+
+    const activeTables = tables.filter(( table ) => {
+      const hasStarted = table.startTime <= startTime
+      const stillPlaying = table.endTime >= endTime
+      return hasStarted && stillPlaying
+    })
+
+    const rate = ( duration * TABLE_PER_HOUR * activeTables.length ) / activePlayers.length
+
+    buckets.push({
+      startTime,
+      endTime,
+      duration,
+      activePlayers,
+      activeTables,
+      rate,
+    })
+  }
+
+  return buckets
+}
+
+export const getMoney = ( session, player ) => {
+  const { tables, players } = session
+
   let tableTime = 0
   let playingTime = 0
 
@@ -31,4 +79,16 @@ const getMoney = ( session, player ) => {
   return moneys.toFixed( 2 )
 }
 
-export default getMoney
+export const getCorrectMoney = ( buckets, player ) => {
+  let due = 0
+
+  buckets.forEach(( bucket ) => {
+    const isActive = bucket.activePlayers.indexOf( player ) > -1
+
+    if ( isActive ) {
+      due += bucket.rate
+    }
+  })
+
+  return due.toFixed( 2 )
+}
