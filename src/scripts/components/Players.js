@@ -20,8 +20,8 @@ class Players extends React.Component {
 
       snapshot.forEach(( childSnapshot ) =>  {
         const session = childSnapshot.val()
-        session.players.forEach(( player ) => {
-          if ( playerNames.indexOf( player.name ) < 0 ) playerNames.push( player.name )
+        session.players.forEach(({ name }) => {
+          if ( playerNames.indexOf( name.trim()) < 0 ) playerNames.push( name.trim())
         })
       })
 

@@ -51778,8 +51778,10 @@ var Players = function (_React$Component) {
 
         snapshot.forEach(function (childSnapshot) {
           var session = childSnapshot.val();
-          session.players.forEach(function (player) {
-            if (playerNames.indexOf(player.name) < 0) playerNames.push(player.name);
+          session.players.forEach(function (_ref) {
+            var name = _ref.name;
+
+            if (playerNames.indexOf(name.trim()) < 0) playerNames.push(name.trim());
           });
         });
 
