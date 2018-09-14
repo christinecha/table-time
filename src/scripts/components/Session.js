@@ -15,6 +15,42 @@ const getFormattedNow = () => {
   return formattedNow
 }
 
+const isPeak = ( session, table ) => {
+  const day = moment( session.date, 'YYYY-MM-DD' ).day()
+  let startPeak = '17:00'
+  let endPeak = '22:00'
+  let latePeak = false
+
+  // MON - THU
+  if ( day > 0 && day < 5 ) {
+    // Normal
+  }
+
+  // FRI - SAT: until close at 2am
+  if ( day === 5 || day === 6 ) {
+    endPeak = '02:00'
+    latePeak = true
+  }
+
+  // SAT - SUN: starts at 11am
+  if ( day === 6 || day === 0 ) {
+    startPeak = '11:00'
+  }
+
+  // SUN: closes at 8pm
+  if ( day === 0 ) {
+    endPeak = '20:00'
+  }
+
+  console.log( 'try', day, startPeak, endPeak )
+
+  if ( latePeak ) {
+    return table.startTime >= startPeak && ( table.endTime <= endPeak || table.endTime <= '23:59' )
+  }
+
+  return table.startTime >= startPeak && table.endTime <= endPeak
+}
+
 const DEFAULT_DATE = moment().format( 'YYYY-MM-DD' )
 const DEFAULT_START_TIME = getFormattedNow()
 const DEFAULT_END_TIME = moment( DEFAULT_START_TIME, 'HH:mm' ).add( 2, 'hours' ).format( 'HH:mm' )
@@ -176,6 +212,7 @@ class Session extends React.Component {
     let error = ''
 
     const rates = getRates( session )
+    console.log( rates )
 
     rates.forEach(( rate ) => {
       if ( rate.activePlayers.length < 1 ) {
@@ -189,13 +226,19 @@ class Session extends React.Component {
       }
     })
 
-    session.tables.forEach(({ startTime, endTime }) => {
+    session.tables.forEach(( table ) => {
+      const { startTime, endTime } = table
       if (
         !startTime ||
         !endTime
       ) {
         isValid = false
         error = 'Please fill out all fields or delete empties.'
+      }
+
+      if ( !isPeak( session, table )) {
+        isValid = false
+        error = 'You\'ve included some off-peak time.'
       }
     })
 

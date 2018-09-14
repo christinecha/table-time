@@ -12,7 +12,11 @@ const getDuration = ( data ) => {
   const end = getHoursAndMinutes( data.endTime )
 
   const minDiff = end.minutes - start.minutes
-  const hourDiff = end.hours - start.hours
+  let hourDiff = end.hours - start.hours
+
+  if ( hourDiff < 0 ) {
+    hourDiff += 24
+  }
 
   return hourDiff + minDiff / 60
 }
@@ -21,14 +25,33 @@ export const getRates = ( session ) => {
   const { tables, players } = session
 
   const units = tables.concat( players )
-  const intersects = []
+  let intersects = []
 
   units.forEach(({ startTime, endTime }) => {
     if ( intersects.indexOf( startTime ) < 0 ) intersects.push( startTime )
     if ( intersects.indexOf( endTime ) < 0   ) intersects.push( endTime )
   })
 
-  intersects.sort()
+  intersects.sort(( a, b ) => {
+    let newA = a
+    let newB = b
+
+    if ( a <= '02:00' ) {
+      const parts = a.split( ':' )
+      parts[ 0 ] = parseInt( parts[ 0 ]) + 24
+      newA = parts.join( ':' )
+    }
+
+    if ( b <= '02:00' ) {
+      const parts = b.split( ':' )
+      parts[ 0 ] = parseInt( parts[ 0 ]) + 24
+      newB = parts.join( ':' )
+    }
+
+    if ( newA < newB ) return -1
+    if ( newA > newB ) return 1
+    return 0
+  })
 
   const buckets = []
 

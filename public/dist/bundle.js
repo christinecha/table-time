@@ -51993,6 +51993,42 @@ var getFormattedNow = function getFormattedNow() {
   return formattedNow;
 };
 
+var isPeak = function isPeak(session, table) {
+  var day = (0, _moment2.default)(session.date, 'YYYY-MM-DD').day();
+  var startPeak = '17:00';
+  var endPeak = '22:00';
+  var latePeak = false;
+
+  // MON - THU
+  if (day > 0 && day < 5) {}
+  // Normal
+
+
+  // FRI - SAT: until close at 2am
+  if (day === 5 || day === 6) {
+    endPeak = '02:00';
+    latePeak = true;
+  }
+
+  // SAT - SUN: starts at 11am
+  if (day === 6 || day === 0) {
+    startPeak = '11:00';
+  }
+
+  // SUN: closes at 8pm
+  if (day === 0) {
+    endPeak = '20:00';
+  }
+
+  console.log('try', day, startPeak, endPeak);
+
+  if (latePeak) {
+    return table.startTime >= startPeak && (table.endTime <= endPeak || table.endTime <= '23:59');
+  }
+
+  return table.startTime >= startPeak && table.endTime <= endPeak;
+};
+
 var DEFAULT_DATE = (0, _moment2.default)().format('YYYY-MM-DD');
 var DEFAULT_START_TIME = getFormattedNow();
 var DEFAULT_END_TIME = (0, _moment2.default)(DEFAULT_START_TIME, 'HH:mm').add(2, 'hours').format('HH:mm');
@@ -52192,6 +52228,7 @@ var Session = function (_React$Component) {
       var error = '';
 
       var rates = (0, _getMoney.getRates)(session);
+      console.log(rates);
 
       rates.forEach(function (rate) {
         if (rate.activePlayers.length < 1) {
@@ -52205,13 +52242,18 @@ var Session = function (_React$Component) {
         }
       });
 
-      session.tables.forEach(function (_ref) {
-        var startTime = _ref.startTime,
-            endTime = _ref.endTime;
+      session.tables.forEach(function (table) {
+        var startTime = table.startTime,
+            endTime = table.endTime;
 
         if (!startTime || !endTime) {
           isValid = false;
           error = 'Please fill out all fields or delete empties.';
+        }
+
+        if (!isPeak(session, table)) {
+          isValid = false;
+          error = 'You\'ve included some off-peak time.';
         }
       });
 
@@ -52579,6 +52621,10 @@ var getDuration = function getDuration(data) {
   var minDiff = end.minutes - start.minutes;
   var hourDiff = end.hours - start.hours;
 
+  if (hourDiff < 0) {
+    hourDiff += 24;
+  }
+
   return hourDiff + minDiff / 60;
 };
 
@@ -52598,7 +52644,26 @@ var getRates = exports.getRates = function getRates(session) {
     if (intersects.indexOf(endTime) < 0) intersects.push(endTime);
   });
 
-  intersects.sort();
+  intersects.sort(function (a, b) {
+    var newA = a;
+    var newB = b;
+
+    if (a <= '02:00') {
+      var parts = a.split(':');
+      parts[0] = parseInt(parts[0]) + 24;
+      newA = parts.join(':');
+    }
+
+    if (b <= '02:00') {
+      var _parts = b.split(':');
+      _parts[0] = parseInt(_parts[0]) + 24;
+      newB = _parts.join(':');
+    }
+
+    if (newA < newB) return -1;
+    if (newA > newB) return 1;
+    return 0;
+  });
 
   var buckets = [];
 
